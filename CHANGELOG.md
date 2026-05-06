@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Added support for attributes of `compas.datastructures.Mesh` (mesh, edges, vertices, faces attributes) to be serialized and deserialized. PointData is backwards compatible with previous versions, so vertex attributes are filtered to remove `x`, `y`, `z` keys.
+* Added support for `compas.datastructures.Graph` serialization and deserialization.
 
 ### Changed
 

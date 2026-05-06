@@ -1,5 +1,7 @@
+from ast import literal_eval
 from uuid import UUID
 
+from compas.datastructures import Graph
 from compas.datastructures import Mesh
 from compas.geometry import Arc
 from compas.geometry import Bezier
@@ -30,7 +32,6 @@ from compas.geometry import Torus
 from compas.geometry import Transformation
 from compas.geometry import Translation
 from compas.geometry import Vector
-
 
 from compas_pb.core import _deserialize_dict
 from compas_pb.core import _serialize_dict
@@ -1722,3 +1723,71 @@ def polyhedron_from_pb(proto_data: datastructures_pb2.PolyhedronData) -> Polyhed
     result = Polyhedron(vertices=vertices, faces=faces, name=proto_data.name)
     result._guid = proto_data.guid
     return result
+
+
+# =============================================================================
+# Graph
+# =============================================================================
+
+
+@pb_serializer(Graph)
+def graph_to_pb(graph: Graph) -> datastructures_pb2.GraphData:
+    """
+    Convert a COMPAS Graph to protobuf message.
+
+    Parameters
+    ----------
+    graph : Graph
+        The COMPAS Graph object to serialize.
+
+    Returns
+    -------
+    datastructures_pb2.GraphData
+        The protobuf message representing the Graph.
+    """
+    proto_data = datastructures_pb2.GraphData()
+    proto_data.guid = str(graph.guid)
+    proto_data.name = graph.name or "Graph"
+
+    nodes = {repr(key): attr for key, attr in graph.node.items()}
+    edges = {repr(u): {repr(v): attr for v, attr in nbrs.items()} for u, nbrs in graph.edge.items()}
+
+    proto_data.nodes.CopyFrom(_serialize_dict(nodes))
+    proto_data.edges.CopyFrom(_serialize_dict(edges))
+    proto_data.attributes.CopyFrom(_serialize_dict(graph.attributes))
+    proto_data.default_node_attributes.CopyFrom(_serialize_dict(graph.default_node_attributes))
+    proto_data.default_edge_attributes.CopyFrom(_serialize_dict(graph.default_edge_attributes))
+
+    return proto_data
+
+
+@pb_deserializer(datastructures_pb2.GraphData)
+def graph_from_pb(proto_data: datastructures_pb2.GraphData) -> Graph:
+    """
+    Convert a protobuf message to COMPAS Graph.
+
+    Parameters
+    ----------
+    proto_data : datastructures_pb2.GraphData
+        The protobuf message representing a Graph.
+
+    Returns
+    -------
+    Graph
+        The deserialized COMPAS Graph object.
+    """
+    graph = Graph(
+        default_node_attributes=_deserialize_dict(proto_data.default_node_attributes),
+        default_edge_attributes=_deserialize_dict(proto_data.default_edge_attributes),
+        name=proto_data.name,
+    )
+    graph.attributes.update(_deserialize_dict(proto_data.attributes))
+
+    for node_key, attr in _deserialize_dict(proto_data.nodes).items():
+        graph.add_node(key=literal_eval(node_key), attr_dict=attr)
+    for u, nbrs in _deserialize_dict(proto_data.edges).items():
+        for v, attr in nbrs.items():
+            graph.add_edge(literal_eval(u), literal_eval(v), attr_dict=attr)
+
+    graph._guid = UUID(proto_data.guid)
+    return graph
