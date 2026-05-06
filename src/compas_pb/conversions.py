@@ -260,6 +260,18 @@ def frame_from_pb(proto_data: geometry_pb2.FrameData) -> Frame:
 
 @pb_serializer(Mesh)
 def mesh_to_pb(mesh: Mesh) -> datastructures_pb2.MeshData:
+    """Convert a COMPAS Mesh to protobuf message.
+
+    Parameters
+    ----------
+    mesh
+        The COMPAS Mesh object to serialize.
+
+    Returns
+    -------
+    datastructures_pb2.MeshData
+        The protobuf message representing the Mesh.
+    """
     proto_data = datastructures_pb2.MeshData()
     proto_data.guid = str(mesh.guid)
     proto_data.name = mesh.name or "Mesh"
