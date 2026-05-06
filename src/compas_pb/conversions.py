@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from compas.datastructures import Mesh
 from compas.geometry import Arc
 from compas.geometry import Bezier
@@ -29,6 +31,9 @@ from compas.geometry import Transformation
 from compas.geometry import Translation
 from compas.geometry import Vector
 
+
+from compas_pb.core import _deserialize_dict
+from compas_pb.core import _serialize_dict
 from compas_pb.generated import datastructures_pb2
 from compas_pb.generated import geometry_pb2
 
@@ -254,19 +259,6 @@ def frame_from_pb(proto_data: geometry_pb2.FrameData) -> Frame:
 
 @pb_serializer(Mesh)
 def mesh_to_pb(mesh: Mesh) -> datastructures_pb2.MeshData:
-    """
-    Convert a COMPAS Mesh to protobuf message.
-
-    Parameters
-    ----------
-    mesh : Mesh
-        The COMPAS Mesh object to serialize.
-
-    Returns
-    -------
-    datastructures_pb2.MeshData
-        The protobuf message representing the Mesh.
-    """
     proto_data = datastructures_pb2.MeshData()
     proto_data.guid = str(mesh.guid)
     proto_data.name = mesh.name or "Mesh"
@@ -282,6 +274,19 @@ def mesh_to_pb(mesh: Mesh) -> datastructures_pb2.MeshData:
         face_msg = datastructures_pb2.FaceList()
         face_msg.indices.extend(indices)
         proto_data.faces.append(face_msg)
+
+    proto_data.attributes.CopyFrom(_serialize_dict(mesh.attributes))
+    proto_data.default_face_attributes.CopyFrom(_serialize_dict(mesh.default_face_attributes))
+    proto_data.default_edge_attributes.CopyFrom(_serialize_dict(mesh.default_edge_attributes))
+    proto_data.default_vertex_attributes.CopyFrom(_serialize_dict(mesh.default_vertex_attributes))
+
+    proto_data.face_attributes.CopyFrom(_serialize_dict({str(k): v for k, v in mesh.facedata.items()}))
+    proto_data.edge_attributes.CopyFrom(_serialize_dict({str(k): v for k, v in mesh.edgedata.items()}))
+
+    vertices_attributes = {}
+    for k, vertex_attributes in mesh.vertex.items():
+        vertices_attributes[str(k)] = {attr_key: attr_value for attr_key, attr_value in vertex_attributes.items() if attr_key not in "xyz"}
+    proto_data.vertex_attributes.CopyFrom(_serialize_dict(vertices_attributes))
 
     return proto_data
 
@@ -313,7 +318,16 @@ def mesh_from_pb(proto_data: datastructures_pb2.MeshData) -> Mesh:
         indices = [vertex_map[i] for i in face.indices]
         mesh.add_face(indices)
 
-    mesh._guid = proto_data.guid
+    mesh._guid = UUID(proto_data.guid)
+    mesh.default_face_attributes.update(_deserialize_dict(proto_data.default_face_attributes))
+    mesh.default_edge_attributes.update(_deserialize_dict(proto_data.default_edge_attributes))
+    mesh.default_vertex_attributes.update(_deserialize_dict(proto_data.default_vertex_attributes))
+    mesh.attributes.update(_deserialize_dict(proto_data.attributes))
+    mesh.facedata.update({int(k): v for k, v in _deserialize_dict(proto_data.face_attributes).items()})
+    mesh.edgedata.update(_deserialize_dict(proto_data.edge_attributes))
+    for vertex_key, vertex_attributes in _deserialize_dict(proto_data.vertex_attributes).items():
+        mesh.vertex[int(vertex_key)].update(vertex_attributes)
+
     return mesh
 
 
