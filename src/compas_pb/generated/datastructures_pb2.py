@@ -23,21 +23,24 @@ _sym_db = _symbol_database.Default()
 
 
 from compas_pb.generated import geometry_pb2 as compas__pb_dot_generated_dot_geometry__pb2
+from compas_pb.generated import message_pb2 as compas__pb_dot_generated_dot_message__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n(compas_pb/generated/datastructures.proto\x12\x0e\x63ompas_pb.data\x1a\"compas_pb/generated/geometry.proto\"\x1b\n\x08\x46\x61\x63\x65List\x12\x0f\n\x07indices\x18\x01 \x03(\r\"\x98\x01\n\x08MeshData\x12\x11\n\x04guid\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x11\n\x04name\x18\x02 \x01(\tH\x01\x88\x01\x01\x12+\n\x08vertices\x18\x03 \x03(\x0b\x32\x19.compas_pb.data.PointData\x12\'\n\x05\x66\x61\x63\x65s\x18\x04 \x03(\x0b\x32\x18.compas_pb.data.FaceListB\x07\n\x05_guidB\x07\n\x05_name\"\"\n\x08\x46\x61\x63\x65\x44\x61ta\x12\x16\n\x0evertex_indices\x18\x01 \x03(\x05\"\x9e\x01\n\x0ePolyhedronData\x12\x11\n\x04guid\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x11\n\x04name\x18\x02 \x01(\tH\x01\x88\x01\x01\x12+\n\x08vertices\x18\x03 \x03(\x0b\x32\x19.compas_pb.data.PointData\x12\'\n\x05\x66\x61\x63\x65s\x18\x04 \x03(\x0b\x32\x18.compas_pb.data.FaceDataB\x07\n\x05_guidB\x07\n\x05_nameb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n(compas_pb/generated/datastructures.proto\x12\x0e\x63ompas_pb.data\x1a\"compas_pb/generated/geometry.proto\x1a!compas_pb/generated/message.proto\"\x1b\n\x08\x46\x61\x63\x65List\x12\x0f\n\x07indices\x18\x01 \x03(\r\"\x94\x04\n\x08MeshData\x12\x11\n\x04guid\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x11\n\x04name\x18\x02 \x01(\tH\x01\x88\x01\x01\x12+\n\x08vertices\x18\x03 \x03(\x0b\x32\x19.compas_pb.data.PointData\x12\'\n\x05\x66\x61\x63\x65s\x18\x04 \x03(\x0b\x32\x18.compas_pb.data.FaceList\x12,\n\nattributes\x18\x05 \x01(\x0b\x32\x18.compas_pb.data.DictData\x12\x33\n\x11vertex_attributes\x18\x06 \x01(\x0b\x32\x18.compas_pb.data.DictData\x12\x31\n\x0f\x66\x61\x63\x65_attributes\x18\x07 \x01(\x0b\x32\x18.compas_pb.data.DictData\x12\x31\n\x0f\x65\x64ge_attributes\x18\x08 \x01(\x0b\x32\x18.compas_pb.data.DictData\x12;\n\x19\x64\x65\x66\x61ult_vertex_attributes\x18\t \x01(\x0b\x32\x18.compas_pb.data.DictData\x12\x39\n\x17\x64\x65\x66\x61ult_face_attributes\x18\n \x01(\x0b\x32\x18.compas_pb.data.DictData\x12\x39\n\x17\x64\x65\x66\x61ult_edge_attributes\x18\x0b \x01(\x0b\x32\x18.compas_pb.data.DictDataB\x07\n\x05_guidB\x07\n\x05_name\"\"\n\x08\x46\x61\x63\x65\x44\x61ta\x12\x16\n\x0evertex_indices\x18\x01 \x03(\x05\"\x9e\x01\n\x0ePolyhedronData\x12\x11\n\x04guid\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x11\n\x04name\x18\x02 \x01(\tH\x01\x88\x01\x01\x12+\n\x08vertices\x18\x03 \x03(\x0b\x32\x19.compas_pb.data.PointData\x12\'\n\x05\x66\x61\x63\x65s\x18\x04 \x03(\x0b\x32\x18.compas_pb.data.FaceDataB\x07\n\x05_guidB\x07\n\x05_name\"\xb9\x02\n\tGraphData\x12\x11\n\x04guid\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x11\n\x04name\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\'\n\x05nodes\x18\x03 \x01(\x0b\x32\x18.compas_pb.data.DictData\x12\'\n\x05\x65\x64ges\x18\x04 \x01(\x0b\x32\x18.compas_pb.data.DictData\x12,\n\nattributes\x18\x05 \x01(\x0b\x32\x18.compas_pb.data.DictData\x12\x39\n\x17\x64\x65\x66\x61ult_node_attributes\x18\x06 \x01(\x0b\x32\x18.compas_pb.data.DictData\x12\x39\n\x17\x64\x65\x66\x61ult_edge_attributes\x18\x07 \x01(\x0b\x32\x18.compas_pb.data.DictDataB\x07\n\x05_guidB\x07\n\x05_nameb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'compas_pb.generated.datastructures_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_FACELIST']._serialized_start=96
-  _globals['_FACELIST']._serialized_end=123
-  _globals['_MESHDATA']._serialized_start=126
-  _globals['_MESHDATA']._serialized_end=278
-  _globals['_FACEDATA']._serialized_start=280
-  _globals['_FACEDATA']._serialized_end=314
-  _globals['_POLYHEDRONDATA']._serialized_start=317
-  _globals['_POLYHEDRONDATA']._serialized_end=475
+  _globals['_FACELIST']._serialized_start=131
+  _globals['_FACELIST']._serialized_end=158
+  _globals['_MESHDATA']._serialized_start=161
+  _globals['_MESHDATA']._serialized_end=693
+  _globals['_FACEDATA']._serialized_start=695
+  _globals['_FACEDATA']._serialized_end=729
+  _globals['_POLYHEDRONDATA']._serialized_start=732
+  _globals['_POLYHEDRONDATA']._serialized_end=890
+  _globals['_GRAPHDATA']._serialized_start=893
+  _globals['_GRAPHDATA']._serialized_end=1206
 # @@protoc_insertion_point(module_scope)

@@ -3,6 +3,7 @@ syntax = "proto3";
 package compas_pb.data;
 
 import "compas_pb/generated/geometry.proto";
+import "compas_pb/generated/message.proto";
 
 // ============================================================================
 // Data Structures
@@ -17,6 +18,13 @@ message MeshData {
   optional string name = 2;
   repeated PointData vertices = 3;
   repeated FaceList faces = 4;
+  DictData attributes = 5;
+  DictData vertex_attributes = 6;
+  DictData face_attributes = 7;
+  DictData edge_attributes = 8;
+  DictData default_vertex_attributes = 9;
+  DictData default_face_attributes = 10;
+  DictData default_edge_attributes = 11;
 }
 
 message FaceData {
@@ -28,4 +36,14 @@ message PolyhedronData {
     optional string name = 2;
     repeated PointData vertices = 3;
     repeated FaceData faces = 4;
+}
+
+message GraphData {
+  optional string guid = 1;
+  optional string name = 2;
+  DictData nodes = 3;
+  DictData edges = 4;
+  DictData attributes = 5;
+  DictData default_node_attributes = 6;
+  DictData default_edge_attributes = 7;
 }
