@@ -48,9 +48,9 @@ def primitive_to_pb(obj: Union[int, float, bool, str, bytes]) -> message_pb2.Any
     if type_ is type(None):
         data_offset.value.null_value = 0  # this just needs to be set to any integer value to indicate null
     elif type_ is int:
-        data_offset.value.number_value = float(obj)  # only float is supported in protobuf
+        data_offset.int_value = obj  # explicit int arm: preserves the int/float distinction
     elif type_ is float:
-        data_offset.value.number_value = obj
+        data_offset.double_value = obj  # explicit float arm: an integral float stays a float
     elif type_ is bool:
         data_offset.value.bool_value = obj
     elif type_ is str:
@@ -80,9 +80,8 @@ def primitive_from_pb(primitive: message_pb2.AnyData) -> Union[int, float, bool,
     if type_ == "null_value":
         data_offset = None
     elif type_ == "number_value":
+        # Legacy path only: int/float now use the explicit int_value/double_value arms.
         data_offset = primitive.value.number_value
-        if data_offset.is_integer():
-            data_offset = int(data_offset)
     elif type_ == "bool_value":
         data_offset = primitive.value.bool_value
     elif type_ == "string_value":
@@ -143,6 +142,10 @@ def any_from_pb(proto_data: message_pb2.AnyData) -> Union[compas.data.Data, int,
     union_field = proto_data.WhichOneof("data")
     if union_field == "value":
         return primitive_from_pb(proto_data)
+    elif union_field == "int_value":
+        return proto_data.int_value
+    elif union_field == "double_value":
+        return proto_data.double_value
     elif union_field == "fallback":
         return _deserialize_fallback(proto_data)
     elif union_field == "message":
@@ -228,11 +231,11 @@ def _serializer_any(obj) -> message_pb2.AnyData:
     any_data = message_pb2.AnyData()
 
     if isinstance(obj, (list, tuple)):
-        data_offset = _serialize_list(obj)
-        any_data.message.Pack(data_offset)
+        # Explicit list arm — avoids the google.protobuf.Any type_url on every nested list.
+        any_data.list_value.CopyFrom(_serialize_list(obj))
     elif isinstance(obj, dict):
-        data_offset = _serialize_dict(obj)
-        any_data.message.Pack(data_offset)
+        # Explicit dict arm — avoids the google.protobuf.Any type_url on every nested dict.
+        any_data.dict_value.CopyFrom(_serialize_dict(obj))
     else:
         # check if it is COMPAS object or Python native type or fallback to dictionary.
         any_data = any_to_pb(obj)
@@ -342,11 +345,16 @@ def deserialize_message_from_json(json_data: str) -> dict:
 
 def _deserialize_any(data: Union[message_pb2.AnyData, message_pb2.ListData, message_pb2.DictData]) -> Union[list, dict]:
     """Deserialize a protobuf message to COMPAS object."""
-    if data.message.Is(message_pb2.ListData.DESCRIPTOR):
+    field = data.WhichOneof("data")
+    if field == "list_value":
+        data_offset = _deserialize_list(data.list_value)
+    elif field == "dict_value":
+        data_offset = _deserialize_dict(data.dict_value)
+    elif data.message.Is(message_pb2.ListData.DESCRIPTOR):  # legacy: list packed in Any
         list_data = message_pb2.ListData()
         data.message.Unpack(list_data)
         data_offset = _deserialize_list(list_data)
-    elif data.message.Is(message_pb2.DictData.DESCRIPTOR):
+    elif data.message.Is(message_pb2.DictData.DESCRIPTOR):  # legacy: dict packed in Any
         dict_data = message_pb2.DictData()
         data.message.Unpack(dict_data)
         data_offset = _deserialize_dict(dict_data)

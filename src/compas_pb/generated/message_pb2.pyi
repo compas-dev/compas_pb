@@ -9,14 +9,22 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class AnyData(_message.Message):
-    __slots__ = ("message", "value", "fallback")
+    __slots__ = ("message", "value", "fallback", "int_value", "double_value", "dict_value", "list_value")
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     VALUE_FIELD_NUMBER: _ClassVar[int]
     FALLBACK_FIELD_NUMBER: _ClassVar[int]
+    INT_VALUE_FIELD_NUMBER: _ClassVar[int]
+    DOUBLE_VALUE_FIELD_NUMBER: _ClassVar[int]
+    DICT_VALUE_FIELD_NUMBER: _ClassVar[int]
+    LIST_VALUE_FIELD_NUMBER: _ClassVar[int]
     message: _any_pb2.Any
     value: _struct_pb2.Value
     fallback: FallbackData
-    def __init__(self, message: _Optional[_Union[_any_pb2.Any, _Mapping]] = ..., value: _Optional[_Union[_struct_pb2.Value, _Mapping]] = ..., fallback: _Optional[_Union[FallbackData, _Mapping]] = ...) -> None: ...
+    int_value: int
+    double_value: float
+    dict_value: DictData
+    list_value: ListData
+    def __init__(self, message: _Optional[_Union[_any_pb2.Any, _Mapping]] = ..., value: _Optional[_Union[_struct_pb2.Value, _Mapping]] = ..., fallback: _Optional[_Union[FallbackData, _Mapping]] = ..., int_value: _Optional[int] = ..., double_value: _Optional[float] = ..., dict_value: _Optional[_Union[DictData, _Mapping]] = ..., list_value: _Optional[_Union[ListData, _Mapping]] = ...) -> None: ...
 
 class FallbackData(_message.Message):
     __slots__ = ("data",)

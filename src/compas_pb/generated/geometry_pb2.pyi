@@ -162,9 +162,9 @@ class BezierData(_message.Message):
     DEGREE_FIELD_NUMBER: _ClassVar[int]
     guid: str
     name: str
-    points: _containers.RepeatedCompositeFieldContainer[PointData]
+    points: _containers.RepeatedScalarFieldContainer[float]
     degree: int
-    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., points: _Optional[_Iterable[_Union[PointData, _Mapping]]] = ..., degree: _Optional[int] = ...) -> None: ...
+    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ..., degree: _Optional[int] = ...) -> None: ...
 
 class PolylineData(_message.Message):
     __slots__ = ("guid", "name", "points")
@@ -173,8 +173,8 @@ class PolylineData(_message.Message):
     POINTS_FIELD_NUMBER: _ClassVar[int]
     guid: str
     name: str
-    points: _containers.RepeatedCompositeFieldContainer[PointData]
-    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., points: _Optional[_Iterable[_Union[PointData, _Mapping]]] = ...) -> None: ...
+    points: _containers.RepeatedScalarFieldContainer[float]
+    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ...) -> None: ...
 
 class PolygonData(_message.Message):
     __slots__ = ("guid", "name", "points")
@@ -183,8 +183,8 @@ class PolygonData(_message.Message):
     POINTS_FIELD_NUMBER: _ClassVar[int]
     guid: str
     name: str
-    points: _containers.RepeatedCompositeFieldContainer[PointData]
-    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., points: _Optional[_Iterable[_Union[PointData, _Mapping]]] = ...) -> None: ...
+    points: _containers.RepeatedScalarFieldContainer[float]
+    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ...) -> None: ...
 
 class BoxData(_message.Message):
     __slots__ = ("guid", "name", "frame", "xsize", "ysize", "zsize")
@@ -277,8 +277,8 @@ class PointcloudData(_message.Message):
     POINTS_FIELD_NUMBER: _ClassVar[int]
     guid: str
     name: str
-    points: _containers.RepeatedCompositeFieldContainer[PointData]
-    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., points: _Optional[_Iterable[_Union[PointData, _Mapping]]] = ...) -> None: ...
+    points: _containers.RepeatedScalarFieldContainer[float]
+    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., points: _Optional[_Iterable[float]] = ...) -> None: ...
 
 class TransformationData(_message.Message):
     __slots__ = ("guid", "name", "matrix")

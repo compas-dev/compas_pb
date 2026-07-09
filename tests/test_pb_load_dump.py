@@ -195,8 +195,9 @@ def test_json_structure_validation():
     parsed = json.loads(json_string)
 
     assert "data" in parsed
-    # For lists, check if it uses message or value field
-    assert "message" in parsed["data"] or "value" in parsed["data"]
+    # A plain list now uses the explicit listValue arm (no google.protobuf.Any wrapper);
+    # registered types still use message, primitives use value.
+    assert any(k in parsed["data"] for k in ("listValue", "message", "value"))
 
 
 def test_json_exact_match():

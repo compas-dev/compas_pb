@@ -26,7 +26,7 @@ from google.protobuf import any_pb2 as google_dot_protobuf_dot_any__pb2
 from google.protobuf import struct_pb2 as google_dot_protobuf_dot_struct__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n!compas_pb/generated/message.proto\x12\x0e\x63ompas_pb.data\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x95\x01\n\x07\x41nyData\x12\'\n\x07message\x18\x01 \x01(\x0b\x32\x14.google.protobuf.AnyH\x00\x12\'\n\x05value\x18\x02 \x01(\x0b\x32\x16.google.protobuf.ValueH\x00\x12\x30\n\x08\x66\x61llback\x18\x03 \x01(\x0b\x32\x1c.compas_pb.data.FallbackDataH\x00\x42\x06\n\x04\x64\x61ta\"6\n\x0c\x46\x61llbackData\x12&\n\x04\x64\x61ta\x18\x01 \x01(\x0b\x32\x18.compas_pb.data.DictData\"2\n\x08ListData\x12&\n\x05items\x18\x01 \x03(\x0b\x32\x17.compas_pb.data.AnyData\"\x85\x01\n\x08\x44ictData\x12\x32\n\x05items\x18\x01 \x03(\x0b\x32#.compas_pb.data.DictData.ItemsEntry\x1a\x45\n\nItemsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\"V\n\x0bMessageData\x12%\n\x04\x64\x61ta\x18\x01 \x01(\x0b\x32\x17.compas_pb.data.AnyData\x12\x14\n\x07version\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\n\n\x08_versionb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n!compas_pb/generated/message.proto\x12\x0e\x63ompas_pb.data\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xa2\x02\n\x07\x41nyData\x12\'\n\x07message\x18\x01 \x01(\x0b\x32\x14.google.protobuf.AnyH\x00\x12\'\n\x05value\x18\x02 \x01(\x0b\x32\x16.google.protobuf.ValueH\x00\x12\x30\n\x08\x66\x61llback\x18\x03 \x01(\x0b\x32\x1c.compas_pb.data.FallbackDataH\x00\x12\x13\n\tint_value\x18\x04 \x01(\x03H\x00\x12\x16\n\x0c\x64ouble_value\x18\x05 \x01(\x01H\x00\x12.\n\ndict_value\x18\x06 \x01(\x0b\x32\x18.compas_pb.data.DictDataH\x00\x12.\n\nlist_value\x18\x07 \x01(\x0b\x32\x18.compas_pb.data.ListDataH\x00\x42\x06\n\x04\x64\x61ta\"6\n\x0c\x46\x61llbackData\x12&\n\x04\x64\x61ta\x18\x01 \x01(\x0b\x32\x18.compas_pb.data.DictData\"2\n\x08ListData\x12&\n\x05items\x18\x01 \x03(\x0b\x32\x17.compas_pb.data.AnyData\"\x85\x01\n\x08\x44ictData\x12\x32\n\x05items\x18\x01 \x03(\x0b\x32#.compas_pb.data.DictData.ItemsEntry\x1a\x45\n\nItemsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\"V\n\x0bMessageData\x12%\n\x04\x64\x61ta\x18\x01 \x01(\x0b\x32\x17.compas_pb.data.AnyData\x12\x14\n\x07version\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\n\n\x08_versionb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -36,15 +36,15 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_DICTDATA_ITEMSENTRY']._loaded_options = None
   _globals['_DICTDATA_ITEMSENTRY']._serialized_options = b'8\001'
   _globals['_ANYDATA']._serialized_start=111
-  _globals['_ANYDATA']._serialized_end=260
-  _globals['_FALLBACKDATA']._serialized_start=262
-  _globals['_FALLBACKDATA']._serialized_end=316
-  _globals['_LISTDATA']._serialized_start=318
-  _globals['_LISTDATA']._serialized_end=368
-  _globals['_DICTDATA']._serialized_start=371
-  _globals['_DICTDATA']._serialized_end=504
-  _globals['_DICTDATA_ITEMSENTRY']._serialized_start=435
-  _globals['_DICTDATA_ITEMSENTRY']._serialized_end=504
-  _globals['_MESSAGEDATA']._serialized_start=506
-  _globals['_MESSAGEDATA']._serialized_end=592
+  _globals['_ANYDATA']._serialized_end=401
+  _globals['_FALLBACKDATA']._serialized_start=403
+  _globals['_FALLBACKDATA']._serialized_end=457
+  _globals['_LISTDATA']._serialized_start=459
+  _globals['_LISTDATA']._serialized_end=509
+  _globals['_DICTDATA']._serialized_start=512
+  _globals['_DICTDATA']._serialized_end=645
+  _globals['_DICTDATA_ITEMSENTRY']._serialized_start=576
+  _globals['_DICTDATA_ITEMSENTRY']._serialized_end=645
+  _globals['_MESSAGEDATA']._serialized_start=647
+  _globals['_MESSAGEDATA']._serialized_end=733
 # @@protoc_insertion_point(module_scope)

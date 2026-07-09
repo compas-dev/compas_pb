@@ -10,17 +10,17 @@ message PointData {
   // no inheritance, so Data will have to repeat but apparently
   string guid = 1;
   string name = 2;
-  float x = 3;
-  float y = 4;
-  float z = 5;
+  double x = 3;
+  double y = 4;
+  double z = 5;
 }
 
 message VectorData {
   string guid = 1;
   string name = 2;
-  float x = 3;
-  float y = 4;
-  float z = 5;
+  double x = 3;
+  double y = 4;
+  double z = 5;
 }
 
 message FrameData {
@@ -41,10 +41,10 @@ message PlaneData {
 message QuaternionData {
     string guid = 1;
     string name = 2;
-    float w = 3;
-    float x = 4;
-    float y = 5;
-    float z = 6;
+    double w = 3;
+    double x = 4;
+    double y = 5;
+    double z = 6;
 }
 
 // ============================================================================
@@ -61,7 +61,7 @@ message LineData {
 message CircleData {
     string guid = 1;
     string name = 2;
-    float radius = 3;
+    double radius = 3;
     FrameData frame = 4;
 }
 
@@ -69,50 +69,50 @@ message ArcData {
   string guid = 1;
   string name = 2;
   CircleData circle = 3;
-  float start_angle = 4;
-  float end_angle = 5;
+  double start_angle = 4;
+  double end_angle = 5;
 }
 
 message EllipseData {
     string guid = 1;
     string name = 2;
-    float major = 3;
-    float minor = 4;
+    double major = 3;
+    double minor = 4;
     FrameData frame = 5;
 }
 
 message ParabolaData {
     string guid = 1;
     string name = 2;
-    float focal = 3;
+    double focal = 3;
     FrameData frame = 4;
 }
 
 message HyperbolaData {
     string guid = 1;
     string name = 2;
-    float major = 3;
-    float minor = 4;
+    double major = 3;
+    double minor = 4;
     FrameData frame = 5;
 }
 
 message BezierData {
     string guid = 1;
     string name = 2;
-    repeated PointData points = 3; // control points
+    repeated double points = 3; // flat x,y,z triplets // control points
     int32 degree = 4;
 }
 
 message PolylineData {
     string guid = 1;
     string name = 2;
-    repeated PointData points = 3;
+    repeated double points = 3; // flat x,y,z triplets
 }
 
 message PolygonData {
   string guid = 1;
   string name = 2;
-  repeated PointData points = 3;
+  repeated double points = 3; // flat x,y,z triplets
 }
 
 // ============================================================================
@@ -123,47 +123,47 @@ message BoxData {
   string guid = 1;
   string name = 2;
   FrameData frame = 3;
-  float xsize = 4;
-  float ysize = 5;
-  float zsize = 6;
+  double xsize = 4;
+  double ysize = 5;
+  double zsize = 6;
 }
 
 message SphereData {
     string guid = 1;
     string name = 2;
-    float radius = 3;
+    double radius = 3;
     FrameData frame = 4;
 }
 
 message CylinderData {
     string guid = 1;
     string name = 2;
-    float radius = 3;
-    float height = 4;
+    double radius = 3;
+    double height = 4;
     FrameData frame = 5;
 }
 
 message ConeData {
     string guid = 1;
     string name = 2;
-    float radius = 3;
-    float height = 4;
+    double radius = 3;
+    double height = 4;
     FrameData frame = 5;
 }
 
 message CapsuleData {
     string guid = 1;
     string name = 2;
-    float radius = 3;
-    float height = 4;
+    double radius = 3;
+    double height = 4;
     FrameData frame = 5;
 }
 
 message TorusData {
     string guid = 1;
     string name = 2;
-    float radius_axis = 3;
-    float radius_pipe = 4;
+    double radius_axis = 3;
+    double radius_pipe = 4;
     FrameData frame = 5;
 }
 
@@ -174,7 +174,7 @@ message TorusData {
 message PointcloudData {
     string guid = 1;
     string name = 2;
-    repeated PointData points = 3;
+    repeated double points = 3; // flat x,y,z triplets
 }
 
 // ============================================================================
@@ -184,7 +184,7 @@ message PointcloudData {
 message TransformationData {
     string guid = 1;
     string name = 2;
-    repeated float matrix = 3; // 4x4 matrix stored as flat array of 16 floats
+    repeated double matrix = 3; // 4x4 matrix stored as flat array of 16 floats
 }
 
 message TranslationData {
@@ -197,30 +197,30 @@ message RotationData {
     string guid = 1;
     string name = 2;
     VectorData axis = 3;
-    float angle = 4;
+    double angle = 4;
     PointData point = 5; // point of rotation (optional, default to origin)
 }
 
 message ScaleData {
     string guid = 1;
     string name = 2;
-    repeated float matrix = 3; // 4x4 matrix stored as flat array of 16 floats
+    repeated double matrix = 3; // 4x4 matrix stored as flat array of 16 floats
 }
 
 message ReflectionData {
     string guid = 1;
     string name = 2;
-    repeated float matrix = 3; // 4x4 matrix stored as flat array of 16 floats
+    repeated double matrix = 3; // 4x4 matrix stored as flat array of 16 floats
 }
 
 message ShearData {
     string guid = 1;
     string name = 2;
-    repeated float matrix = 3; // 4x4 matrix stored as flat array of 16 floats
+    repeated double matrix = 3; // 4x4 matrix stored as flat array of 16 floats
 }
 
 message ProjectionData {
     string guid = 1;
     string name = 2;
-    repeated float matrix = 3; // 4x4 matrix stored as flat array of 16 floats
+    repeated double matrix = 3; // 4x4 matrix stored as flat array of 16 floats
 }

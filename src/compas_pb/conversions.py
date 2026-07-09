@@ -37,6 +37,39 @@ from compas_pb.core import _deserialize_dict
 from compas_pb.core import _serialize_dict
 from compas_pb.generated import datastructures_pb2
 from compas_pb.generated import geometry_pb2
+from compas_pb.generated import message_pb2
+
+
+def _fill_attr_map(dest_map, data_dict):
+    """Populate a ``map<string, AnyData>`` proto field from a Python dict.
+
+    Empty dicts are skipped, so absent/empty attribute maps cost zero bytes on the wire.
+    """
+    if data_dict:
+        dest_map.MergeFrom(_serialize_dict(data_dict).items)
+
+
+def _read_attr_map(src_map):
+    """Read a ``map<string, AnyData>`` proto field back into a Python dict."""
+    wrapper = message_pb2.DictData()
+    wrapper.items.MergeFrom(src_map)
+    return _deserialize_dict(wrapper)
+
+
+def _extend_flat_points(dest_field, points):
+    """Append points to a flat ``repeated double`` field as consecutive x, y, z triplets.
+
+    This replaces a full ``PointData`` message per point (which also carried a per-point
+    UUID/name) with three packed doubles, the dominant size/speed win for point-heavy types.
+    """
+    for pt in points:
+        x, y, z = pt
+        dest_field.extend((x, y, z))
+
+
+def _flat_points_to_lists(flat):
+    """Read a flat ``repeated double`` field back into a list of ``[x, y, z]`` lists."""
+    return [[flat[i], flat[i + 1], flat[i + 2]] for i in range(0, len(flat), 3)]
 
 from .registry import pb_deserializer
 from .registry import pb_serializer
@@ -276,29 +309,33 @@ def mesh_to_pb(mesh: Mesh) -> datastructures_pb2.MeshData:
     proto_data.guid = str(mesh.guid)
     proto_data.name = mesh.name or "Mesh"
 
+    # Vertices as a flat coordinate array (3 doubles per vertex) instead of a message per vertex.
     index_map = {}  # vertex_key → index
-    for index, (key, attr) in enumerate(mesh.vertices(data=True)):
-        point = Point(*mesh.vertex_coordinates(key))
-        proto_data.vertices.append(point_to_pb(point))
+    for index, key in enumerate(mesh.vertices()):
+        x, y, z = mesh.vertex_coordinates(key)
+        proto_data.vertices.extend((x, y, z))
         index_map[key] = index
 
+    # Faces in CSR form: concatenated indices + per-face vertex counts.
     for fkey in mesh.faces():
         indices = [index_map[vkey] for vkey in mesh.face_vertices(fkey)]
-        face_msg = datastructures_pb2.FaceList()
-        face_msg.indices.extend(indices)
-        proto_data.faces.append(face_msg)
+        proto_data.face_vertices.extend(indices)
+        proto_data.face_sizes.append(len(indices))
 
-    proto_data.attributes.CopyFrom(_serialize_dict(mesh.attributes))
-    proto_data.default_edge_attributes.CopyFrom(_serialize_dict(mesh.default_edge_attributes))
-    proto_data.default_face_attributes.CopyFrom(_serialize_dict(mesh.default_face_attributes))
-    proto_data.default_vertex_attributes.CopyFrom(_serialize_dict(mesh.default_vertex_attributes))
+    # Attributes as inline maps; only non-empty entries are written (empty/default maps -> 0 bytes).
+    _fill_attr_map(proto_data.attributes, mesh.attributes)
+    _fill_attr_map(proto_data.default_edge_attributes, mesh.default_edge_attributes)
+    _fill_attr_map(proto_data.default_face_attributes, mesh.default_face_attributes)
+    _fill_attr_map(proto_data.default_vertex_attributes, mesh.default_vertex_attributes)
+    _fill_attr_map(proto_data.edge_attributes, mesh.edgedata)
+    _fill_attr_map(proto_data.face_attributes, {str(k): v for k, v in mesh.facedata.items() if v})
 
-    proto_data.edge_attributes.CopyFrom(_serialize_dict(mesh.edgedata))
-    proto_data.face_attributes.CopyFrom(_serialize_dict({str(k): v for k, v in mesh.facedata.items()}))
-    vertices_attributes = {}
-    for k, vertex_attributes in mesh.vertex.items():
-        vertices_attributes[str(k)] = {attr_key: attr_value for attr_key, attr_value in vertex_attributes.items() if attr_key not in "xyz"}
-    proto_data.vertex_attributes.CopyFrom(_serialize_dict(vertices_attributes))
+    vertex_attributes = {}
+    for key, attr in mesh.vertex.items():
+        extra = {ak: av for ak, av in attr.items() if ak not in ("x", "y", "z")}
+        if extra:
+            vertex_attributes[str(key)] = extra
+    _fill_attr_map(proto_data.vertex_attributes, vertex_attributes)
 
     return proto_data
 
@@ -321,23 +358,26 @@ def mesh_from_pb(proto_data: datastructures_pb2.MeshData) -> Mesh:
     mesh = Mesh(name=proto_data.name)
     vertex_map = []
 
-    for pb_point in proto_data.vertices:
-        point = point_from_pb(pb_point)
-        key = mesh.add_vertex(x=point.x, y=point.y, z=point.z)
+    # Flat coordinate array: consume 3 doubles (x, y, z) per vertex.
+    coords = proto_data.vertices
+    for i in range(0, len(coords), 3):
+        key = mesh.add_vertex(x=coords[i], y=coords[i + 1], z=coords[i + 2])
         vertex_map.append(key)
 
-    for face in proto_data.faces:
-        indices = [vertex_map[i] for i in face.indices]
+    offset = 0
+    for size in proto_data.face_sizes:
+        indices = [vertex_map[i] for i in proto_data.face_vertices[offset:offset + size]]
         mesh.add_face(indices)
+        offset += size
 
     mesh._guid = UUID(proto_data.guid)
-    mesh.default_edge_attributes.update(_deserialize_dict(proto_data.default_edge_attributes))
-    mesh.default_face_attributes.update(_deserialize_dict(proto_data.default_face_attributes))
-    mesh.default_vertex_attributes.update(_deserialize_dict(proto_data.default_vertex_attributes))
-    mesh.attributes.update(_deserialize_dict(proto_data.attributes))
-    mesh.edgedata.update(_deserialize_dict(proto_data.edge_attributes))
-    mesh.facedata.update({int(k): v for k, v in _deserialize_dict(proto_data.face_attributes).items()})
-    for vertex_key, vertex_attributes in _deserialize_dict(proto_data.vertex_attributes).items():
+    mesh.default_edge_attributes.update(_read_attr_map(proto_data.default_edge_attributes))
+    mesh.default_face_attributes.update(_read_attr_map(proto_data.default_face_attributes))
+    mesh.default_vertex_attributes.update(_read_attr_map(proto_data.default_vertex_attributes))
+    mesh.attributes.update(_read_attr_map(proto_data.attributes))
+    mesh.edgedata.update(_read_attr_map(proto_data.edge_attributes))
+    mesh.facedata.update({int(k): v for k, v in _read_attr_map(proto_data.face_attributes).items()})
+    for vertex_key, vertex_attributes in _read_attr_map(proto_data.vertex_attributes).items():
         mesh.vertex[int(vertex_key)].update(vertex_attributes)
 
     return mesh
@@ -471,9 +511,7 @@ def polygon_to_pb(polygon: Polygon) -> geometry_pb2.PolygonData:
     proto_data.guid = str(polygon.guid)
     proto_data.name = polygon.name
 
-    for point in polygon.points:
-        proto_point = point_to_pb(point)
-        proto_data.points.append(proto_point)
+    _extend_flat_points(proto_data.points, polygon.points)
 
     return proto_data
 
@@ -493,7 +531,7 @@ def polygon_from_pb(proto_data: geometry_pb2.PolygonData) -> Polygon:
     Polygon
         The deserialized COMPAS Polygon object.
     """
-    points = [point_from_pb(proto_point) for proto_point in proto_data.points]
+    points = _flat_points_to_lists(proto_data.points)
     result = Polygon(points=points, name=proto_data.name)
     result._guid = proto_data.guid
     return result
@@ -895,9 +933,7 @@ def polyline_to_pb(polyline: Polyline) -> geometry_pb2.PolylineData:
     proto_data.guid = str(polyline.guid)
     proto_data.name = polyline.name
 
-    for point in polyline.points:
-        proto_point = point_to_pb(point)
-        proto_data.points.append(proto_point)
+    _extend_flat_points(proto_data.points, polyline.points)
 
     return proto_data
 
@@ -917,7 +953,7 @@ def polyline_from_pb(proto_data: geometry_pb2.PolylineData) -> Polyline:
     Polyline
         The deserialized COMPAS Polyline object.
     """
-    points = [point_from_pb(proto_point) for proto_point in proto_data.points]
+    points = _flat_points_to_lists(proto_data.points)
     result = Polyline(points=points, name=proto_data.name)
     result._guid = proto_data.guid
     return result
@@ -947,9 +983,7 @@ def pointcloud_to_pb(pointcloud: Pointcloud) -> geometry_pb2.PointcloudData:
     proto_data.guid = str(pointcloud.guid)
     proto_data.name = pointcloud.name
 
-    for point in pointcloud.points:
-        proto_point = point_to_pb(point)
-        proto_data.points.append(proto_point)
+    _extend_flat_points(proto_data.points, pointcloud.points)
 
     return proto_data
 
@@ -969,7 +1003,7 @@ def pointcloud_from_pb(proto_data: geometry_pb2.PointcloudData) -> Pointcloud:
     Pointcloud
         The deserialized COMPAS Pointcloud object.
     """
-    points = [point_from_pb(proto_point) for proto_point in proto_data.points]
+    points = _flat_points_to_lists(proto_data.points)
     result = Pointcloud(points=points, name=proto_data.name)
     result._guid = proto_data.guid
     return result
@@ -1538,9 +1572,7 @@ def bezier_to_pb(bezier: Bezier) -> geometry_pb2.BezierData:
     proto_data.name = bezier.name
     proto_data.degree = bezier.degree
 
-    for point in bezier.points:
-        proto_point = point_to_pb(point)
-        proto_data.points.append(proto_point)
+    _extend_flat_points(proto_data.points, bezier.points)
 
     return proto_data
 
@@ -1560,7 +1592,7 @@ def bezier_from_pb(proto_data: geometry_pb2.BezierData) -> Bezier:
     Bezier
         The deserialized COMPAS Bezier object.
     """
-    points = [point_from_pb(proto_point) for proto_point in proto_data.points]
+    points = _flat_points_to_lists(proto_data.points)
     result = Bezier(points=points, name=proto_data.name)
     result._guid = proto_data.guid
     return result
@@ -1695,10 +1727,8 @@ def polyhedron_to_pb(polyhedron: Polyhedron) -> datastructures_pb2.PolyhedronDat
     proto_data.guid = str(polyhedron.guid)
     proto_data.name = polyhedron.name
 
-    # Add vertices
-    for vertex in polyhedron.vertices:
-        proto_vertex = point_to_pb(vertex)
-        proto_data.vertices.append(proto_vertex)
+    # Add vertices as a flat coordinate array (3 doubles per vertex)
+    _extend_flat_points(proto_data.vertices, polyhedron.vertices)
 
     # Add faces
     for face in polyhedron.faces:
@@ -1725,7 +1755,7 @@ def polyhedron_from_pb(proto_data: datastructures_pb2.PolyhedronData) -> Polyhed
     Polyhedron
         The deserialized COMPAS Polyhedron object.
     """
-    vertices = [point_from_pb(proto_vertex) for proto_vertex in proto_data.vertices]
+    vertices = _flat_points_to_lists(proto_data.vertices)
     faces = []
     for proto_face in proto_data.faces:
         face = list(proto_face.vertex_indices)
@@ -1763,11 +1793,11 @@ def graph_to_pb(graph: Graph) -> datastructures_pb2.GraphData:
     nodes = {repr(key): attr for key, attr in graph.node.items()}
     edges = {repr(u): {repr(v): attr for v, attr in nbrs.items()} for u, nbrs in graph.edge.items()}
 
-    proto_data.nodes.CopyFrom(_serialize_dict(nodes))
-    proto_data.edges.CopyFrom(_serialize_dict(edges))
-    proto_data.attributes.CopyFrom(_serialize_dict(graph.attributes))
-    proto_data.default_node_attributes.CopyFrom(_serialize_dict(graph.default_node_attributes))
-    proto_data.default_edge_attributes.CopyFrom(_serialize_dict(graph.default_edge_attributes))
+    _fill_attr_map(proto_data.nodes, nodes)
+    _fill_attr_map(proto_data.edges, edges)
+    _fill_attr_map(proto_data.attributes, graph.attributes)
+    _fill_attr_map(proto_data.default_node_attributes, graph.default_node_attributes)
+    _fill_attr_map(proto_data.default_edge_attributes, graph.default_edge_attributes)
 
     return proto_data
 
@@ -1788,15 +1818,15 @@ def graph_from_pb(proto_data: datastructures_pb2.GraphData) -> Graph:
         The deserialized COMPAS Graph object.
     """
     graph = Graph(
-        default_node_attributes=_deserialize_dict(proto_data.default_node_attributes),
-        default_edge_attributes=_deserialize_dict(proto_data.default_edge_attributes),
+        default_node_attributes=_read_attr_map(proto_data.default_node_attributes),
+        default_edge_attributes=_read_attr_map(proto_data.default_edge_attributes),
         name=proto_data.name,
     )
-    graph.attributes.update(_deserialize_dict(proto_data.attributes))
+    graph.attributes.update(_read_attr_map(proto_data.attributes))
 
-    for node_key, attr in _deserialize_dict(proto_data.nodes).items():
+    for node_key, attr in _read_attr_map(proto_data.nodes).items():
         graph.add_node(key=literal_eval(node_key), attr_dict=attr)
-    for u, nbrs in _deserialize_dict(proto_data.edges).items():
+    for u, nbrs in _read_attr_map(proto_data.edges).items():
         for v, attr in nbrs.items():
             graph.add_edge(literal_eval(u), literal_eval(v), attr_dict=attr)
 
