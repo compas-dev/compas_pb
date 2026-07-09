@@ -8,6 +8,20 @@ import "compas_pb/generated/message.proto";
 // Data Structures
 // ============================================================================
 
+// A single vertex attribute stored column-wise across vertices.
+// If `indices` is empty the column is dense: one value per vertex, in vertex order.
+// Otherwise `indices[k]` is the vertex index carrying the k-th value (sparse).
+// Exactly one of the typed arrays / `values` is populated, selected by `kind`.
+message AttributeColumn {
+  string name = 1;
+  repeated uint32 indices = 2;
+  uint32 kind = 3;              // 0 = double, 1 = int, 2 = bool, 3 = generic AnyData
+  repeated double doubles = 4;
+  repeated sint64 ints = 5;
+  repeated bool bools = 6;
+  repeated AnyData values = 7;  // mixed / non-numeric columns
+}
+
 message MeshData {
   optional string guid = 1;
   optional string name = 2;
@@ -17,7 +31,7 @@ message MeshData {
   repeated uint32 face_vertices = 4;
   repeated uint32 face_sizes = 12;
   map<string, AnyData> attributes = 5;
-  map<string, AnyData> vertex_attributes = 6;
+  repeated AttributeColumn vertex_attribute_columns = 6; // vertex attrs, column-wise
   map<string, AnyData> face_attributes = 7;
   map<string, AnyData> edge_attributes = 8;
   map<string, AnyData> default_vertex_attributes = 9;

@@ -33,8 +33,10 @@ from compas.geometry import Transformation
 from compas.geometry import Translation
 from compas.geometry import Vector
 
+from compas_pb.core import _deserialize_any
 from compas_pb.core import _deserialize_dict
 from compas_pb.core import _serialize_dict
+from compas_pb.core import _serializer_any
 from compas_pb.generated import datastructures_pb2
 from compas_pb.generated import geometry_pb2
 from compas_pb.generated import message_pb2
@@ -70,6 +72,68 @@ def _extend_flat_points(dest_field, points):
 def _flat_points_to_lists(flat):
     """Read a flat ``repeated double`` field back into a list of ``[x, y, z]`` lists."""
     return [[flat[i], flat[i + 1], flat[i + 2]] for i in range(0, len(flat), 3)]
+
+
+_COORD_KEYS = ("x", "y", "z")
+
+
+def _fill_attribute_columns(dest, element_attrs, index_map, count):
+    """Write per-element attribute dicts column-wise into a repeated ``AttributeColumn`` field.
+
+    Instead of a dict (and repeated attribute-name string) per element, each attribute name is
+    stored once with a packed value array. Numeric columns use packed ``double``/``int``/``bool``
+    arrays (no per-value framing, bulk-decodable); mixed columns fall back to ``AnyData``. A
+    dense column (every element in order) stores no ``indices``.
+    """
+    columns = {}  # name -> list of (index, value), in element order
+    for key, attr in element_attrs.items():
+        idx = index_map[key]
+        for name, value in attr.items():
+            if name in _COORD_KEYS:
+                continue
+            columns.setdefault(name, []).append((idx, value))
+
+    for name, pairs in columns.items():
+        pairs.sort(key=lambda p: p[0])
+        indices = [i for i, _ in pairs]
+        values = [v for _, v in pairs]
+        col = dest.add()
+        col.name = name
+        if indices != list(range(count)):  # sparse: record which elements carry the attribute
+            col.indices.extend(indices)
+        if values and all(type(v) is float for v in values):
+            col.kind = 0
+            col.doubles.extend(values)
+        elif values and all(type(v) is int for v in values):  # type() is int excludes bool
+            col.kind = 1
+            col.ints.extend(values)
+        elif values and all(type(v) is bool for v in values):
+            col.kind = 2
+            col.bools.extend(values)
+        else:
+            col.kind = 3
+            for v in values:
+                col.values.append(_serializer_any(v))
+
+
+def _read_attribute_columns(columns, index_to_key, target):
+    """Apply column-wise attributes back onto per-element attribute dicts.
+
+    ``index_to_key`` maps an integer index to the element key; ``target`` maps element key to
+    the mutable attribute dict to update.
+    """
+    for col in columns:
+        if col.kind == 0:
+            values = list(col.doubles)
+        elif col.kind == 1:
+            values = list(col.ints)
+        elif col.kind == 2:
+            values = list(col.bools)
+        else:
+            values = [_deserialize_any(v) for v in col.values]
+        indices = list(col.indices) if col.indices else range(len(values))
+        for idx, value in zip(indices, values):
+            target[index_to_key[idx]][col.name] = value
 
 from .registry import pb_deserializer
 from .registry import pb_serializer
@@ -330,12 +394,7 @@ def mesh_to_pb(mesh: Mesh) -> datastructures_pb2.MeshData:
     _fill_attr_map(proto_data.edge_attributes, mesh.edgedata)
     _fill_attr_map(proto_data.face_attributes, {str(k): v for k, v in mesh.facedata.items() if v})
 
-    vertex_attributes = {}
-    for key, attr in mesh.vertex.items():
-        extra = {ak: av for ak, av in attr.items() if ak not in ("x", "y", "z")}
-        if extra:
-            vertex_attributes[str(key)] = extra
-    _fill_attr_map(proto_data.vertex_attributes, vertex_attributes)
+    _fill_attribute_columns(proto_data.vertex_attribute_columns, mesh.vertex, index_map, len(index_map))
 
     return proto_data
 
@@ -377,8 +436,7 @@ def mesh_from_pb(proto_data: datastructures_pb2.MeshData) -> Mesh:
     mesh.attributes.update(_read_attr_map(proto_data.attributes))
     mesh.edgedata.update(_read_attr_map(proto_data.edge_attributes))
     mesh.facedata.update({int(k): v for k, v in _read_attr_map(proto_data.face_attributes).items()})
-    for vertex_key, vertex_attributes in _read_attr_map(proto_data.vertex_attributes).items():
-        mesh.vertex[int(vertex_key)].update(vertex_attributes)
+    _read_attribute_columns(proto_data.vertex_attribute_columns, vertex_map, mesh.vertex)
 
     return mesh
 
