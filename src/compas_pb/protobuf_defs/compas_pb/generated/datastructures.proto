@@ -31,9 +31,10 @@ message MeshData {
   repeated uint32 face_vertices = 4;
   repeated uint32 face_sizes = 12;
   map<string, AnyData> attributes = 5;
-  repeated AttributeColumn vertex_attribute_columns = 6; // vertex attrs, column-wise
-  map<string, AnyData> face_attributes = 7;
-  map<string, AnyData> edge_attributes = 8;
+  repeated AttributeColumn vertex_attribute_columns = 6; // vertex attrs, column-wise (by vertex index)
+  repeated AttributeColumn face_attribute_columns = 7;   // face attrs, column-wise (by face index)
+  repeated AttributeColumn edge_attribute_columns = 8;   // edge attrs, column-wise (aligned to edge_keys)
+  repeated AnyData edge_keys = 13;                        // keys of edges carrying attributes
   map<string, AnyData> default_vertex_attributes = 9;
   map<string, AnyData> default_face_attributes = 10;
   map<string, AnyData> default_edge_attributes = 11;

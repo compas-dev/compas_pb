@@ -26,22 +26,8 @@ class AttributeColumn(_message.Message):
     def __init__(self, name: _Optional[str] = ..., indices: _Optional[_Iterable[int]] = ..., kind: _Optional[int] = ..., doubles: _Optional[_Iterable[float]] = ..., ints: _Optional[_Iterable[int]] = ..., bools: _Optional[_Iterable[bool]] = ..., values: _Optional[_Iterable[_Union[_message_pb2.AnyData, _Mapping]]] = ...) -> None: ...
 
 class MeshData(_message.Message):
-    __slots__ = ("guid", "name", "vertices", "face_vertices", "face_sizes", "attributes", "vertex_attribute_columns", "face_attributes", "edge_attributes", "default_vertex_attributes", "default_face_attributes", "default_edge_attributes")
+    __slots__ = ("guid", "name", "vertices", "face_vertices", "face_sizes", "attributes", "vertex_attribute_columns", "face_attribute_columns", "edge_attribute_columns", "edge_keys", "default_vertex_attributes", "default_face_attributes", "default_edge_attributes")
     class AttributesEntry(_message.Message):
-        __slots__ = ("key", "value")
-        KEY_FIELD_NUMBER: _ClassVar[int]
-        VALUE_FIELD_NUMBER: _ClassVar[int]
-        key: str
-        value: _message_pb2.AnyData
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[_message_pb2.AnyData, _Mapping]] = ...) -> None: ...
-    class FaceAttributesEntry(_message.Message):
-        __slots__ = ("key", "value")
-        KEY_FIELD_NUMBER: _ClassVar[int]
-        VALUE_FIELD_NUMBER: _ClassVar[int]
-        key: str
-        value: _message_pb2.AnyData
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[_message_pb2.AnyData, _Mapping]] = ...) -> None: ...
-    class EdgeAttributesEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
@@ -76,8 +62,9 @@ class MeshData(_message.Message):
     FACE_SIZES_FIELD_NUMBER: _ClassVar[int]
     ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
     VERTEX_ATTRIBUTE_COLUMNS_FIELD_NUMBER: _ClassVar[int]
-    FACE_ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
-    EDGE_ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
+    FACE_ATTRIBUTE_COLUMNS_FIELD_NUMBER: _ClassVar[int]
+    EDGE_ATTRIBUTE_COLUMNS_FIELD_NUMBER: _ClassVar[int]
+    EDGE_KEYS_FIELD_NUMBER: _ClassVar[int]
     DEFAULT_VERTEX_ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
     DEFAULT_FACE_ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
     DEFAULT_EDGE_ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
@@ -88,12 +75,13 @@ class MeshData(_message.Message):
     face_sizes: _containers.RepeatedScalarFieldContainer[int]
     attributes: _containers.MessageMap[str, _message_pb2.AnyData]
     vertex_attribute_columns: _containers.RepeatedCompositeFieldContainer[AttributeColumn]
-    face_attributes: _containers.MessageMap[str, _message_pb2.AnyData]
-    edge_attributes: _containers.MessageMap[str, _message_pb2.AnyData]
+    face_attribute_columns: _containers.RepeatedCompositeFieldContainer[AttributeColumn]
+    edge_attribute_columns: _containers.RepeatedCompositeFieldContainer[AttributeColumn]
+    edge_keys: _containers.RepeatedCompositeFieldContainer[_message_pb2.AnyData]
     default_vertex_attributes: _containers.MessageMap[str, _message_pb2.AnyData]
     default_face_attributes: _containers.MessageMap[str, _message_pb2.AnyData]
     default_edge_attributes: _containers.MessageMap[str, _message_pb2.AnyData]
-    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., vertices: _Optional[_Iterable[float]] = ..., face_vertices: _Optional[_Iterable[int]] = ..., face_sizes: _Optional[_Iterable[int]] = ..., attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., vertex_attribute_columns: _Optional[_Iterable[_Union[AttributeColumn, _Mapping]]] = ..., face_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., edge_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., default_vertex_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., default_face_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., default_edge_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ...) -> None: ...
+    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., vertices: _Optional[_Iterable[float]] = ..., face_vertices: _Optional[_Iterable[int]] = ..., face_sizes: _Optional[_Iterable[int]] = ..., attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., vertex_attribute_columns: _Optional[_Iterable[_Union[AttributeColumn, _Mapping]]] = ..., face_attribute_columns: _Optional[_Iterable[_Union[AttributeColumn, _Mapping]]] = ..., edge_attribute_columns: _Optional[_Iterable[_Union[AttributeColumn, _Mapping]]] = ..., edge_keys: _Optional[_Iterable[_Union[_message_pb2.AnyData, _Mapping]]] = ..., default_vertex_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., default_face_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., default_edge_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ...) -> None: ...
 
 class FaceData(_message.Message):
     __slots__ = ("vertex_indices",)

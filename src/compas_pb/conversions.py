@@ -400,24 +400,30 @@ def mesh_to_pb(mesh: Mesh) -> datastructures_pb2.MeshData:
         vertex_keys.append(key)
 
     # Faces in CSR form: concatenated indices + per-face vertex counts.
+    face_keys = []
     for fkey in mesh.faces():
         indices = [index_map[vkey] for vkey in mesh.face_vertices(fkey)]
         proto_data.face_vertices.extend(indices)
         proto_data.face_sizes.append(len(indices))
+        face_keys.append(fkey)
 
-    # Attributes as inline maps; only non-empty entries are written (empty/default maps -> 0 bytes).
+    # Defaults + top-level attributes as inline maps (empty ones cost 0 bytes).
     _fill_attr_map(proto_data.attributes, mesh.attributes)
     _fill_attr_map(proto_data.default_edge_attributes, mesh.default_edge_attributes)
     _fill_attr_map(proto_data.default_face_attributes, mesh.default_face_attributes)
     _fill_attr_map(proto_data.default_vertex_attributes, mesh.default_vertex_attributes)
-    _fill_attr_map(proto_data.edge_attributes, mesh.edgedata)
-    _fill_attr_map(proto_data.face_attributes, {str(k): v for k, v in mesh.facedata.items() if v})
 
+    # Per-element attributes stored column-wise.
     _fill_attribute_columns(
         proto_data.vertex_attribute_columns,
         [mesh.vertex[k] for k in vertex_keys],
         exclude=_COORD_KEYS,
     )
+    _fill_attribute_columns(proto_data.face_attribute_columns, [mesh.facedata.get(k, {}) for k in face_keys])
+    edge_items = [(k, v) for k, v in mesh.edgedata.items() if v]
+    for key, _ in edge_items:
+        proto_data.edge_keys.append(_serializer_any(key))
+    _fill_attribute_columns(proto_data.edge_attribute_columns, [v for _, v in edge_items])
 
     return proto_data
 
@@ -446,10 +452,11 @@ def mesh_from_pb(proto_data: datastructures_pb2.MeshData) -> Mesh:
         key = mesh.add_vertex(x=coords[i], y=coords[i + 1], z=coords[i + 2])
         vertex_map.append(key)
 
+    face_map = []
     offset = 0
     for size in proto_data.face_sizes:
         indices = [vertex_map[i] for i in proto_data.face_vertices[offset:offset + size]]
-        mesh.add_face(indices)
+        face_map.append(mesh.add_face(indices))
         offset += size
 
     if proto_data.guid:
@@ -458,9 +465,16 @@ def mesh_from_pb(proto_data: datastructures_pb2.MeshData) -> Mesh:
     mesh.default_face_attributes.update(_read_attr_map(proto_data.default_face_attributes))
     mesh.default_vertex_attributes.update(_read_attr_map(proto_data.default_vertex_attributes))
     mesh.attributes.update(_read_attr_map(proto_data.attributes))
-    mesh.edgedata.update(_read_attr_map(proto_data.edge_attributes))
-    mesh.facedata.update({int(k): v for k, v in _read_attr_map(proto_data.face_attributes).items()})
+
+    # Per-element attributes, column-wise.
     _read_attribute_columns(proto_data.vertex_attribute_columns, vertex_map, mesh.vertex)
+    for fkey in face_map:
+        mesh.facedata.setdefault(fkey, {})
+    _read_attribute_columns(proto_data.face_attribute_columns, face_map, mesh.facedata)
+    edge_keys = [_deserialize_any(k) for k in proto_data.edge_keys]
+    for key in edge_keys:
+        mesh.edgedata.setdefault(key, {})
+    _read_attribute_columns(proto_data.edge_attribute_columns, edge_keys, mesh.edgedata)
 
     return mesh
 

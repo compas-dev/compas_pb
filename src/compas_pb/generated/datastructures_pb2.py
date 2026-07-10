@@ -25,7 +25,7 @@ _sym_db = _symbol_database.Default()
 from compas_pb.generated import message_pb2 as compas__pb_dot_generated_dot_message__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n(compas_pb/generated/datastructures.proto\x12\x0e\x63ompas_pb.data\x1a!compas_pb/generated/message.proto\"\x95\x01\n\x0f\x41ttributeColumn\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07indices\x18\x02 \x03(\r\x12\x0c\n\x04kind\x18\x03 \x01(\r\x12\x0f\n\x07\x64oubles\x18\x04 \x03(\x01\x12\x0c\n\x04ints\x18\x05 \x03(\x12\x12\r\n\x05\x62ools\x18\x06 \x03(\x08\x12\'\n\x06values\x18\x07 \x03(\x0b\x32\x17.compas_pb.data.AnyData\"\x87\t\n\x08MeshData\x12\x11\n\x04guid\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x11\n\x04name\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x10\n\x08vertices\x18\x03 \x03(\x01\x12\x15\n\rface_vertices\x18\x04 \x03(\r\x12\x12\n\nface_sizes\x18\x0c \x03(\r\x12<\n\nattributes\x18\x05 \x03(\x0b\x32(.compas_pb.data.MeshData.AttributesEntry\x12\x41\n\x18vertex_attribute_columns\x18\x06 \x03(\x0b\x32\x1f.compas_pb.data.AttributeColumn\x12\x45\n\x0f\x66\x61\x63\x65_attributes\x18\x07 \x03(\x0b\x32,.compas_pb.data.MeshData.FaceAttributesEntry\x12\x45\n\x0f\x65\x64ge_attributes\x18\x08 \x03(\x0b\x32,.compas_pb.data.MeshData.EdgeAttributesEntry\x12X\n\x19\x64\x65\x66\x61ult_vertex_attributes\x18\t \x03(\x0b\x32\x35.compas_pb.data.MeshData.DefaultVertexAttributesEntry\x12T\n\x17\x64\x65\x66\x61ult_face_attributes\x18\n \x03(\x0b\x32\x33.compas_pb.data.MeshData.DefaultFaceAttributesEntry\x12T\n\x17\x64\x65\x66\x61ult_edge_attributes\x18\x0b \x03(\x0b\x32\x33.compas_pb.data.MeshData.DefaultEdgeAttributesEntry\x1aJ\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aN\n\x13\x46\x61\x63\x65\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aN\n\x13\x45\x64geAttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aW\n\x1c\x44\x65\x66\x61ultVertexAttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aU\n\x1a\x44\x65\x66\x61ultFaceAttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aU\n\x1a\x44\x65\x66\x61ultEdgeAttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x42\x07\n\x05_guidB\x07\n\x05_name\"\"\n\x08\x46\x61\x63\x65\x44\x61ta\x12\x16\n\x0evertex_indices\x18\x01 \x03(\x05\"\x83\x01\n\x0ePolyhedronData\x12\x11\n\x04guid\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x11\n\x04name\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x10\n\x08vertices\x18\x03 \x03(\x01\x12\'\n\x05\x66\x61\x63\x65s\x18\x04 \x03(\x0b\x32\x18.compas_pb.data.FaceDataB\x07\n\x05_guidB\x07\n\x05_name\"\xea\x05\n\tGraphData\x12\x11\n\x04guid\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x11\n\x04name\x18\x02 \x01(\tH\x01\x88\x01\x01\x12*\n\tnode_keys\x18\x03 \x03(\x0b\x32\x17.compas_pb.data.AnyData\x12\x38\n\x0fnode_attributes\x18\x04 \x03(\x0b\x32\x1f.compas_pb.data.AttributeColumn\x12=\n\nattributes\x18\x05 \x03(\x0b\x32).compas_pb.data.GraphData.AttributesEntry\x12U\n\x17\x64\x65\x66\x61ult_node_attributes\x18\x06 \x03(\x0b\x32\x34.compas_pb.data.GraphData.DefaultNodeAttributesEntry\x12U\n\x17\x64\x65\x66\x61ult_edge_attributes\x18\x07 \x03(\x0b\x32\x34.compas_pb.data.GraphData.DefaultEdgeAttributesEntry\x12\x0e\n\x06\x65\x64ge_u\x18\x08 \x03(\r\x12\x0e\n\x06\x65\x64ge_v\x18\t \x03(\r\x12\x38\n\x0f\x65\x64ge_attributes\x18\n \x03(\x0b\x32\x1f.compas_pb.data.AttributeColumn\x1aJ\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aU\n\x1a\x44\x65\x66\x61ultNodeAttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aU\n\x1a\x44\x65\x66\x61ultEdgeAttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x42\x07\n\x05_guidB\x07\n\x05_nameb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n(compas_pb/generated/datastructures.proto\x12\x0e\x63ompas_pb.data\x1a!compas_pb/generated/message.proto\"\x95\x01\n\x0f\x41ttributeColumn\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07indices\x18\x02 \x03(\r\x12\x0c\n\x04kind\x18\x03 \x01(\r\x12\x0f\n\x07\x64oubles\x18\x04 \x03(\x01\x12\x0c\n\x04ints\x18\x05 \x03(\x12\x12\r\n\x05\x62ools\x18\x06 \x03(\x08\x12\'\n\x06values\x18\x07 \x03(\x0b\x32\x17.compas_pb.data.AnyData\"\x87\x08\n\x08MeshData\x12\x11\n\x04guid\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x11\n\x04name\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x10\n\x08vertices\x18\x03 \x03(\x01\x12\x15\n\rface_vertices\x18\x04 \x03(\r\x12\x12\n\nface_sizes\x18\x0c \x03(\r\x12<\n\nattributes\x18\x05 \x03(\x0b\x32(.compas_pb.data.MeshData.AttributesEntry\x12\x41\n\x18vertex_attribute_columns\x18\x06 \x03(\x0b\x32\x1f.compas_pb.data.AttributeColumn\x12?\n\x16\x66\x61\x63\x65_attribute_columns\x18\x07 \x03(\x0b\x32\x1f.compas_pb.data.AttributeColumn\x12?\n\x16\x65\x64ge_attribute_columns\x18\x08 \x03(\x0b\x32\x1f.compas_pb.data.AttributeColumn\x12*\n\tedge_keys\x18\r \x03(\x0b\x32\x17.compas_pb.data.AnyData\x12X\n\x19\x64\x65\x66\x61ult_vertex_attributes\x18\t \x03(\x0b\x32\x35.compas_pb.data.MeshData.DefaultVertexAttributesEntry\x12T\n\x17\x64\x65\x66\x61ult_face_attributes\x18\n \x03(\x0b\x32\x33.compas_pb.data.MeshData.DefaultFaceAttributesEntry\x12T\n\x17\x64\x65\x66\x61ult_edge_attributes\x18\x0b \x03(\x0b\x32\x33.compas_pb.data.MeshData.DefaultEdgeAttributesEntry\x1aJ\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aW\n\x1c\x44\x65\x66\x61ultVertexAttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aU\n\x1a\x44\x65\x66\x61ultFaceAttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aU\n\x1a\x44\x65\x66\x61ultEdgeAttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x42\x07\n\x05_guidB\x07\n\x05_name\"\"\n\x08\x46\x61\x63\x65\x44\x61ta\x12\x16\n\x0evertex_indices\x18\x01 \x03(\x05\"\x83\x01\n\x0ePolyhedronData\x12\x11\n\x04guid\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x11\n\x04name\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x10\n\x08vertices\x18\x03 \x03(\x01\x12\'\n\x05\x66\x61\x63\x65s\x18\x04 \x03(\x0b\x32\x18.compas_pb.data.FaceDataB\x07\n\x05_guidB\x07\n\x05_name\"\xea\x05\n\tGraphData\x12\x11\n\x04guid\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x11\n\x04name\x18\x02 \x01(\tH\x01\x88\x01\x01\x12*\n\tnode_keys\x18\x03 \x03(\x0b\x32\x17.compas_pb.data.AnyData\x12\x38\n\x0fnode_attributes\x18\x04 \x03(\x0b\x32\x1f.compas_pb.data.AttributeColumn\x12=\n\nattributes\x18\x05 \x03(\x0b\x32).compas_pb.data.GraphData.AttributesEntry\x12U\n\x17\x64\x65\x66\x61ult_node_attributes\x18\x06 \x03(\x0b\x32\x34.compas_pb.data.GraphData.DefaultNodeAttributesEntry\x12U\n\x17\x64\x65\x66\x61ult_edge_attributes\x18\x07 \x03(\x0b\x32\x34.compas_pb.data.GraphData.DefaultEdgeAttributesEntry\x12\x0e\n\x06\x65\x64ge_u\x18\x08 \x03(\r\x12\x0e\n\x06\x65\x64ge_v\x18\t \x03(\r\x12\x38\n\x0f\x65\x64ge_attributes\x18\n \x03(\x0b\x32\x1f.compas_pb.data.AttributeColumn\x1aJ\n\x0f\x41ttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aU\n\x1a\x44\x65\x66\x61ultNodeAttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x1aU\n\x1a\x44\x65\x66\x61ultEdgeAttributesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\x05value\x18\x02 \x01(\x0b\x32\x17.compas_pb.data.AnyData:\x02\x38\x01\x42\x07\n\x05_guidB\x07\n\x05_nameb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,10 +34,6 @@ if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_MESHDATA_ATTRIBUTESENTRY']._loaded_options = None
   _globals['_MESHDATA_ATTRIBUTESENTRY']._serialized_options = b'8\001'
-  _globals['_MESHDATA_FACEATTRIBUTESENTRY']._loaded_options = None
-  _globals['_MESHDATA_FACEATTRIBUTESENTRY']._serialized_options = b'8\001'
-  _globals['_MESHDATA_EDGEATTRIBUTESENTRY']._loaded_options = None
-  _globals['_MESHDATA_EDGEATTRIBUTESENTRY']._serialized_options = b'8\001'
   _globals['_MESHDATA_DEFAULTVERTEXATTRIBUTESENTRY']._loaded_options = None
   _globals['_MESHDATA_DEFAULTVERTEXATTRIBUTESENTRY']._serialized_options = b'8\001'
   _globals['_MESHDATA_DEFAULTFACEATTRIBUTESENTRY']._loaded_options = None
@@ -53,29 +49,25 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_ATTRIBUTECOLUMN']._serialized_start=96
   _globals['_ATTRIBUTECOLUMN']._serialized_end=245
   _globals['_MESHDATA']._serialized_start=248
-  _globals['_MESHDATA']._serialized_end=1407
-  _globals['_MESHDATA_ATTRIBUTESENTRY']._serialized_start=892
-  _globals['_MESHDATA_ATTRIBUTESENTRY']._serialized_end=966
-  _globals['_MESHDATA_FACEATTRIBUTESENTRY']._serialized_start=968
-  _globals['_MESHDATA_FACEATTRIBUTESENTRY']._serialized_end=1046
-  _globals['_MESHDATA_EDGEATTRIBUTESENTRY']._serialized_start=1048
-  _globals['_MESHDATA_EDGEATTRIBUTESENTRY']._serialized_end=1126
-  _globals['_MESHDATA_DEFAULTVERTEXATTRIBUTESENTRY']._serialized_start=1128
-  _globals['_MESHDATA_DEFAULTVERTEXATTRIBUTESENTRY']._serialized_end=1215
-  _globals['_MESHDATA_DEFAULTFACEATTRIBUTESENTRY']._serialized_start=1217
-  _globals['_MESHDATA_DEFAULTFACEATTRIBUTESENTRY']._serialized_end=1302
-  _globals['_MESHDATA_DEFAULTEDGEATTRIBUTESENTRY']._serialized_start=1304
-  _globals['_MESHDATA_DEFAULTEDGEATTRIBUTESENTRY']._serialized_end=1389
-  _globals['_FACEDATA']._serialized_start=1409
-  _globals['_FACEDATA']._serialized_end=1443
-  _globals['_POLYHEDRONDATA']._serialized_start=1446
-  _globals['_POLYHEDRONDATA']._serialized_end=1577
-  _globals['_GRAPHDATA']._serialized_start=1580
-  _globals['_GRAPHDATA']._serialized_end=2326
-  _globals['_GRAPHDATA_ATTRIBUTESENTRY']._serialized_start=892
-  _globals['_GRAPHDATA_ATTRIBUTESENTRY']._serialized_end=966
-  _globals['_GRAPHDATA_DEFAULTNODEATTRIBUTESENTRY']._serialized_start=2136
-  _globals['_GRAPHDATA_DEFAULTNODEATTRIBUTESENTRY']._serialized_end=2221
-  _globals['_GRAPHDATA_DEFAULTEDGEATTRIBUTESENTRY']._serialized_start=1304
-  _globals['_GRAPHDATA_DEFAULTEDGEATTRIBUTESENTRY']._serialized_end=1389
+  _globals['_MESHDATA']._serialized_end=1279
+  _globals['_MESHDATA_ATTRIBUTESENTRY']._serialized_start=924
+  _globals['_MESHDATA_ATTRIBUTESENTRY']._serialized_end=998
+  _globals['_MESHDATA_DEFAULTVERTEXATTRIBUTESENTRY']._serialized_start=1000
+  _globals['_MESHDATA_DEFAULTVERTEXATTRIBUTESENTRY']._serialized_end=1087
+  _globals['_MESHDATA_DEFAULTFACEATTRIBUTESENTRY']._serialized_start=1089
+  _globals['_MESHDATA_DEFAULTFACEATTRIBUTESENTRY']._serialized_end=1174
+  _globals['_MESHDATA_DEFAULTEDGEATTRIBUTESENTRY']._serialized_start=1176
+  _globals['_MESHDATA_DEFAULTEDGEATTRIBUTESENTRY']._serialized_end=1261
+  _globals['_FACEDATA']._serialized_start=1281
+  _globals['_FACEDATA']._serialized_end=1315
+  _globals['_POLYHEDRONDATA']._serialized_start=1318
+  _globals['_POLYHEDRONDATA']._serialized_end=1449
+  _globals['_GRAPHDATA']._serialized_start=1452
+  _globals['_GRAPHDATA']._serialized_end=2198
+  _globals['_GRAPHDATA_ATTRIBUTESENTRY']._serialized_start=924
+  _globals['_GRAPHDATA_ATTRIBUTESENTRY']._serialized_end=998
+  _globals['_GRAPHDATA_DEFAULTNODEATTRIBUTESENTRY']._serialized_start=2008
+  _globals['_GRAPHDATA_DEFAULTNODEATTRIBUTESENTRY']._serialized_end=2093
+  _globals['_GRAPHDATA_DEFAULTEDGEATTRIBUTESENTRY']._serialized_start=1176
+  _globals['_GRAPHDATA_DEFAULTEDGEATTRIBUTESENTRY']._serialized_end=1261
 # @@protoc_insertion_point(module_scope)
