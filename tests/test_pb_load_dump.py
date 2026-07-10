@@ -211,13 +211,12 @@ def test_json_exact_match():
 
     parsed = json.loads(json_string)
 
-    # Expected structure for a Point
+    # Expected structure for a Point. An auto-generated guid and the default name ("Point")
+    # are not serialized, so they are absent from the message.
     expected_structure = {
         "data": {
             "message": {
                 "@type": "type.googleapis.com/compas_pb.data.PointData",
-                "guid": parsed["data"]["message"]["guid"],  # GUID is dynamic, so we use the actual one
-                "name": "Point",
                 "x": 1.0,
                 "y": 2.0,
                 "z": 3.0,

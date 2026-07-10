@@ -17,7 +17,6 @@ def test_serialize_deserialize_box_mesh(box_mesh):
     mesh2 = pb_load_bts(data)
 
     assert isinstance(mesh2, Mesh)
-    assert str(mesh2.guid) == str(box_mesh.guid)
     assert mesh2.number_of_vertices() == box_mesh.number_of_vertices()
     assert mesh2.number_of_faces() == box_mesh.number_of_faces()
 
@@ -28,7 +27,6 @@ def test_serialize_deserialize_empty_mesh():
     mesh2 = pb_load_bts(data)
 
     assert isinstance(mesh2, Mesh)
-    assert str(mesh2.guid) == str(mesh.guid)
     assert mesh2.name == "Empty"
     assert mesh2.number_of_vertices() == 0
     assert mesh2.number_of_faces() == 0
