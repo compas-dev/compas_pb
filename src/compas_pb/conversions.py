@@ -1,4 +1,3 @@
-from ast import literal_eval
 from uuid import UUID
 
 from compas.datastructures import Graph
@@ -77,19 +76,23 @@ def _flat_points_to_lists(flat):
 _COORD_KEYS = ("x", "y", "z")
 
 
-def _fill_attribute_columns(dest, element_attrs, index_map, count):
+def _fill_attribute_columns(dest, ordered_attrs, exclude=()):
     """Write per-element attribute dicts column-wise into a repeated ``AttributeColumn`` field.
 
-    Instead of a dict (and repeated attribute-name string) per element, each attribute name is
-    stored once with a packed value array. Numeric columns use packed ``double``/``int``/``bool``
-    arrays (no per-value framing, bulk-decodable); mixed columns fall back to ``AnyData``. A
-    dense column (every element in order) stores no ``indices``.
+    ``ordered_attrs`` is a list of attribute dicts in element order (an element's index is its
+    position). Instead of a dict (and a repeated attribute-name string) per element, each
+    attribute name is stored once with a packed value array. Numeric columns use packed
+    ``double``/``int``/``bool`` arrays (no per-value framing, bulk-decodable); mixed columns fall
+    back to ``AnyData``. A dense column (every element in order) stores no ``indices``.
+
+    ``exclude`` names are skipped, e.g. mesh vertex coordinates that live in a separate flat
+    array; for a graph nothing is excluded because coordinates live in the node attributes.
     """
+    count = len(ordered_attrs)
     columns = {}  # name -> list of (index, value), in element order
-    for key, attr in element_attrs.items():
-        idx = index_map[key]
+    for idx, attr in enumerate(ordered_attrs):
         for name, value in attr.items():
-            if name in _COORD_KEYS:
+            if name in exclude:
                 continue
             columns.setdefault(name, []).append((idx, value))
 
@@ -389,10 +392,12 @@ def mesh_to_pb(mesh: Mesh) -> datastructures_pb2.MeshData:
 
     # Vertices as a flat coordinate array (3 doubles per vertex) instead of a message per vertex.
     index_map = {}  # vertex_key → index
+    vertex_keys = []
     for index, key in enumerate(mesh.vertices()):
         x, y, z = mesh.vertex_coordinates(key)
         proto_data.vertices.extend((x, y, z))
         index_map[key] = index
+        vertex_keys.append(key)
 
     # Faces in CSR form: concatenated indices + per-face vertex counts.
     for fkey in mesh.faces():
@@ -408,7 +413,11 @@ def mesh_to_pb(mesh: Mesh) -> datastructures_pb2.MeshData:
     _fill_attr_map(proto_data.edge_attributes, mesh.edgedata)
     _fill_attr_map(proto_data.face_attributes, {str(k): v for k, v in mesh.facedata.items() if v})
 
-    _fill_attribute_columns(proto_data.vertex_attribute_columns, mesh.vertex, index_map, len(index_map))
+    _fill_attribute_columns(
+        proto_data.vertex_attribute_columns,
+        [mesh.vertex[k] for k in vertex_keys],
+        exclude=_COORD_KEYS,
+    )
 
     return proto_data
 
@@ -1938,11 +1947,21 @@ def graph_to_pb(graph: Graph) -> datastructures_pb2.GraphData:
     if graph._name is not None:
         proto_data.name = graph.name or "Graph"
 
-    nodes = {repr(key): attr for key, attr in graph.node.items()}
-    edges = {repr(u): {repr(v): attr for v, attr in nbrs.items()} for u, nbrs in graph.edge.items()}
+    # Nodes: keys stored once, attributes (incl. x/y/z) stored column-wise.
+    node_keys = list(graph.nodes())
+    node_index = {key: i for i, key in enumerate(node_keys)}
+    for key in node_keys:
+        proto_data.node_keys.append(_serializer_any(key))
+    _fill_attribute_columns(proto_data.node_attributes, [graph.node[k] for k in node_keys])
 
-    _fill_attr_map(proto_data.nodes, nodes)
-    _fill_attr_map(proto_data.edges, edges)
+    # Edges: index pairs into node_keys + columnar edge attributes.
+    edge_attrs = []
+    for u, v in graph.edges():
+        proto_data.edge_u.append(node_index[u])
+        proto_data.edge_v.append(node_index[v])
+        edge_attrs.append(graph.edge[u][v])
+    _fill_attribute_columns(proto_data.edge_attributes, edge_attrs)
+
     _fill_attr_map(proto_data.attributes, graph.attributes)
     _fill_attr_map(proto_data.default_node_attributes, graph.default_node_attributes)
     _fill_attr_map(proto_data.default_edge_attributes, graph.default_edge_attributes)
@@ -1972,11 +1991,17 @@ def graph_from_pb(proto_data: datastructures_pb2.GraphData) -> Graph:
     )
     graph.attributes.update(_read_attr_map(proto_data.attributes))
 
-    for node_key, attr in _read_attr_map(proto_data.nodes).items():
-        graph.add_node(key=literal_eval(node_key), attr_dict=attr)
-    for u, nbrs in _read_attr_map(proto_data.edges).items():
-        for v, attr in nbrs.items():
-            graph.add_edge(literal_eval(u), literal_eval(v), attr_dict=attr)
+    node_keys = [_deserialize_any(k) for k in proto_data.node_keys]
+    for key in node_keys:
+        graph.add_node(key=key)
+    _read_attribute_columns(proto_data.node_attributes, node_keys, graph.node)
+
+    edge_dicts = []
+    for ui, vi in zip(proto_data.edge_u, proto_data.edge_v):
+        u, v = node_keys[ui], node_keys[vi]
+        graph.add_edge(u, v)
+        edge_dicts.append(graph.edge[u][v])
+    _read_attribute_columns(proto_data.edge_attributes, list(range(len(edge_dicts))), edge_dicts)
 
     if proto_data.guid:
         graph._guid = UUID(proto_data.guid)

@@ -114,21 +114,7 @@ class PolyhedronData(_message.Message):
     def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., vertices: _Optional[_Iterable[float]] = ..., faces: _Optional[_Iterable[_Union[FaceData, _Mapping]]] = ...) -> None: ...
 
 class GraphData(_message.Message):
-    __slots__ = ("guid", "name", "nodes", "edges", "attributes", "default_node_attributes", "default_edge_attributes")
-    class NodesEntry(_message.Message):
-        __slots__ = ("key", "value")
-        KEY_FIELD_NUMBER: _ClassVar[int]
-        VALUE_FIELD_NUMBER: _ClassVar[int]
-        key: str
-        value: _message_pb2.AnyData
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[_message_pb2.AnyData, _Mapping]] = ...) -> None: ...
-    class EdgesEntry(_message.Message):
-        __slots__ = ("key", "value")
-        KEY_FIELD_NUMBER: _ClassVar[int]
-        VALUE_FIELD_NUMBER: _ClassVar[int]
-        key: str
-        value: _message_pb2.AnyData
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[_message_pb2.AnyData, _Mapping]] = ...) -> None: ...
+    __slots__ = ("guid", "name", "node_keys", "node_attributes", "attributes", "default_node_attributes", "default_edge_attributes", "edge_u", "edge_v", "edge_attributes")
     class AttributesEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -152,16 +138,22 @@ class GraphData(_message.Message):
         def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[_message_pb2.AnyData, _Mapping]] = ...) -> None: ...
     GUID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    NODES_FIELD_NUMBER: _ClassVar[int]
-    EDGES_FIELD_NUMBER: _ClassVar[int]
+    NODE_KEYS_FIELD_NUMBER: _ClassVar[int]
+    NODE_ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
     ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
     DEFAULT_NODE_ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
     DEFAULT_EDGE_ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
+    EDGE_U_FIELD_NUMBER: _ClassVar[int]
+    EDGE_V_FIELD_NUMBER: _ClassVar[int]
+    EDGE_ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
     guid: str
     name: str
-    nodes: _containers.MessageMap[str, _message_pb2.AnyData]
-    edges: _containers.MessageMap[str, _message_pb2.AnyData]
+    node_keys: _containers.RepeatedCompositeFieldContainer[_message_pb2.AnyData]
+    node_attributes: _containers.RepeatedCompositeFieldContainer[AttributeColumn]
     attributes: _containers.MessageMap[str, _message_pb2.AnyData]
     default_node_attributes: _containers.MessageMap[str, _message_pb2.AnyData]
     default_edge_attributes: _containers.MessageMap[str, _message_pb2.AnyData]
-    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., nodes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., edges: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., default_node_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., default_edge_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ...) -> None: ...
+    edge_u: _containers.RepeatedScalarFieldContainer[int]
+    edge_v: _containers.RepeatedScalarFieldContainer[int]
+    edge_attributes: _containers.RepeatedCompositeFieldContainer[AttributeColumn]
+    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., node_keys: _Optional[_Iterable[_Union[_message_pb2.AnyData, _Mapping]]] = ..., node_attributes: _Optional[_Iterable[_Union[AttributeColumn, _Mapping]]] = ..., attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., default_node_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., default_edge_attributes: _Optional[_Mapping[str, _message_pb2.AnyData]] = ..., edge_u: _Optional[_Iterable[int]] = ..., edge_v: _Optional[_Iterable[int]] = ..., edge_attributes: _Optional[_Iterable[_Union[AttributeColumn, _Mapping]]] = ...) -> None: ...

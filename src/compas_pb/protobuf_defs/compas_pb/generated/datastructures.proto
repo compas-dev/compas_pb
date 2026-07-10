@@ -53,9 +53,13 @@ message PolyhedronData {
 message GraphData {
   optional string guid = 1;
   optional string name = 2;
-  map<string, AnyData> nodes = 3;
-  map<string, AnyData> edges = 4;
+  repeated AnyData node_keys = 3;               // node keys in order (arbitrary hashable)
+  repeated AttributeColumn node_attributes = 4; // column-wise, including x/y/z coordinates
   map<string, AnyData> attributes = 5;
   map<string, AnyData> default_node_attributes = 6;
   map<string, AnyData> default_edge_attributes = 7;
+  // Edges as index pairs into node_keys, with edge attributes stored column-wise.
+  repeated uint32 edge_u = 8;
+  repeated uint32 edge_v = 9;
+  repeated AttributeColumn edge_attributes = 10;
 }
