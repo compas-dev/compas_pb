@@ -196,9 +196,7 @@ message TranslationData {
 message RotationData {
     string guid = 1;
     string name = 2;
-    VectorData axis = 3;
-    double angle = 4;
-    PointData point = 5; // point of rotation (optional, default to origin)
+    repeated double matrix = 3; // 4x4 matrix stored as flat array of 16 doubles (exact round-trip)
 }
 
 message ScaleData {

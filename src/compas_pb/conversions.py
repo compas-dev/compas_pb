@@ -1286,21 +1286,11 @@ def rotation_to_pb(rotation: Rotation) -> geometry_pb2.RotationData:
     if rotation._name is not None:
         proto_data.name = rotation.name
 
-    # Get axis and angle from the rotation
-    axis_angle = rotation.axis_and_angle
-    axis = axis_angle[0]
-    angle = axis_angle[1]
-
-    proto_axis = vector_to_pb(axis)
-    proto_data.axis.CopyFrom(proto_axis)
-    proto_data.angle = angle
-
-    # Use origin as the default point of rotation
-    from compas.geometry import Point
-
-    point = Point(0, 0, 0)
-    proto_point = point_to_pb(point)
-    proto_data.point.CopyFrom(proto_point)
+    # Store the 4x4 matrix directly (flattened) for an exact round-trip. Encoding axis+angle
+    # instead would recompute the matrix on load and lose ~1e-16.
+    for row in rotation.matrix:
+        for value in row:
+            proto_data.matrix.append(value)
 
     return proto_data
 
@@ -1320,11 +1310,12 @@ def rotation_from_pb(proto_data: geometry_pb2.RotationData) -> Rotation:
     Rotation
         The deserialized COMPAS Rotation object.
     """
-    axis = vector_from_pb(proto_data.axis)
-    angle = proto_data.angle
+    matrix_flat = list(proto_data.matrix)
+    matrix = [matrix_flat[i * 4 : i * 4 + 4] for i in range(4)]
 
-    result = Rotation.from_axis_and_angle(axis, angle)
-    result.name = proto_data.name
+    result = Rotation.from_matrix(matrix)
+    if proto_data.name:
+        result.name = proto_data.name
     if proto_data.guid:
         result._guid = UUID(proto_data.guid)
     return result

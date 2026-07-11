@@ -301,18 +301,14 @@ class TranslationData(_message.Message):
     def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., translation_vector: _Optional[_Union[VectorData, _Mapping]] = ...) -> None: ...
 
 class RotationData(_message.Message):
-    __slots__ = ("guid", "name", "axis", "angle", "point")
+    __slots__ = ("guid", "name", "matrix")
     GUID_FIELD_NUMBER: _ClassVar[int]
     NAME_FIELD_NUMBER: _ClassVar[int]
-    AXIS_FIELD_NUMBER: _ClassVar[int]
-    ANGLE_FIELD_NUMBER: _ClassVar[int]
-    POINT_FIELD_NUMBER: _ClassVar[int]
+    MATRIX_FIELD_NUMBER: _ClassVar[int]
     guid: str
     name: str
-    axis: VectorData
-    angle: float
-    point: PointData
-    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., axis: _Optional[_Union[VectorData, _Mapping]] = ..., angle: _Optional[float] = ..., point: _Optional[_Union[PointData, _Mapping]] = ...) -> None: ...
+    matrix: _containers.RepeatedScalarFieldContainer[float]
+    def __init__(self, guid: _Optional[str] = ..., name: _Optional[str] = ..., matrix: _Optional[_Iterable[float]] = ...) -> None: ...
 
 class ScaleData(_message.Message):
     __slots__ = ("guid", "name", "matrix")
