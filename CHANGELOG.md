@@ -7,15 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-### Breaking
-
-* The wire format changed in a way that is not backwards compatible. Once the version is bumped at release, data serialized by older versions will be refused on deserialization (the wire-version check is now a hard gate keyed on `MAJOR.MINOR`).
-* Auto-generated guids no longer round-trip. They were always session-local `uuid4`s and never stable across save/load; only explicitly set guids are now serialized.
-
 ### Added
 
 ### Changed
 
+* Breaking: The wire format changed in a way that is not backwards compatible. Once the version is bumped at release, data serialized by older versions will be refused on deserialization (the wire-version check is now a hard gate; compatibility follows SemVer — under 0.x every minor is breaking, from 1.0 on only major bumps are).
+* Breaking: Auto-generated guids no longer round-trip. They were always session-local `uuid4`s and never stable across save/load; only explicitly set guids are now serialized.
 * Reworked the wire format into a fully lossless binary mode: all geometry coordinate/scalar fields are now `double` instead of `float`, so `float64` geometry round-trips exactly.
 * Changed `AnyData` to use explicit `int64`/`double`/`dict_value`/`list_value` arms instead of routing values through `google.protobuf.Value`/`Any`, so integral floats no longer come back as ints and nested dicts/lists no longer carry a type URL. `Mesh`/`Graph` are now fully lossless (canonical hash matches).
 * Changed mesh vertices, pointcloud, polyline, polygon, bezier and polyhedron points to a flat packed `repeated double` layout, and mesh faces to CSR form (`face_vertices` + `face_sizes`), instead of one message per point/face.
@@ -23,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Changed `GraphData` to store node keys once, node attributes (including `x`/`y`/`z`) column-wise, and edges as index pairs into the node keys.
 * Changed `guid` and `name` to only be serialized when explicitly set. Auto-generated guids (session-local `uuid4`s) no longer round-trip; explicit guids still do.
 * Changed `Rotation` to be stored as its flattened 4x4 matrix (like other transforms) and reconstructed via `Rotation.from_matrix`, so rotations round-trip bit-exact.
-* Changed the wire-version check into a hard gate: deserialization now raises on a missing or incompatible wire version (keyed on `MAJOR.MINOR`) instead of warning and continuing.
+* Changed the wire-version check into a hard gate: deserialization now raises on a missing or incompatible wire version (compatibility follows SemVer) instead of warning and continuing.
 
 ### Removed
 

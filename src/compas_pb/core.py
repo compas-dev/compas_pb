@@ -383,14 +383,19 @@ def _deserialize_fallback(data_dict: message_pb2.AnyData) -> Data:
 
 
 def _wire_compat_key(version_str: str) -> str:
-    """Wire-compatibility key of a version: ``MAJOR.MINOR``.
+    """Wire-compatibility key of a version, following SemVer.
 
-    Under 0.x every minor release may change the binary schema, so ``0.5.x`` is compatible
-    with ``0.5.y`` but not with ``0.6.x``; from 1.0 on, ``MAJOR`` is the boundary and this
-    still keys on ``MAJOR.MINOR`` (a stricter, always-safe superset).
+    Under 0.x there is no stability guarantee, so every minor release may change the binary
+    schema: the key is ``MAJOR.MINOR`` (``0.5.x`` is compatible with ``0.5.y`` but not with
+    ``0.6.x``). From 1.0 on, ``MAJOR`` is the boundary and minor releases stay
+    backwards-compatible: the key is ``MAJOR`` (``1.0`` and ``1.2`` are compatible; ``2.0``
+    is not).
     """
     parts = str(version_str).split(".")
-    return "{}.{}".format(parts[0], parts[1]) if len(parts) >= 2 else str(version_str)
+    major = parts[0]
+    if major == "0" and len(parts) >= 2:
+        return "0.{}".format(parts[1])
+    return major
 
 
 def _check_version_compatibility(any_data: message_pb2.MessageData) -> None:
