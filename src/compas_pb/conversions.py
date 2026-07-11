@@ -92,20 +92,29 @@ def _fill_attribute_columns(dest, ordered_attrs, exclude=()):
     array; for a graph nothing is excluded because coordinates live in the node attributes.
     """
     count = len(ordered_attrs)
-    columns = {}  # name -> list of (index, value), in element order
+    # Two parallel lists per column; elements are visited in order, so each column's index
+    # list comes out ascending — no sort needed.
+    col_indices = {}  # name -> [index, ...]
+    col_values = {}  # name -> [value, ...]
     for idx, attr in enumerate(ordered_attrs):
         for name, value in attr.items():
             if name in exclude:
                 continue
-            columns.setdefault(name, []).append((idx, value))
+            existing = col_values.get(name)
+            if existing is None:
+                col_indices[name] = [idx]
+                col_values[name] = [value]
+            else:
+                col_indices[name].append(idx)
+                existing.append(value)
 
-    for name, pairs in columns.items():
-        pairs.sort(key=lambda p: p[0])
-        indices = [i for i, _ in pairs]
-        values = [v for _, v in pairs]
+    for name, values in col_values.items():
+        indices = col_indices[name]
         col = dest.add()
         col.name = name
-        if indices != list(range(count)):  # sparse: record which elements carry the attribute
+        # A dense column carries every element in order, so its indices are exactly
+        # range(count); testing the length is enough and skips the array entirely.
+        if len(indices) != count:  # sparse: record which elements carry the attribute
             col.indices.extend(indices)
         if values and all(type(v) is float for v in values):
             col.kind = 0
@@ -392,21 +401,30 @@ def mesh_to_pb(mesh: Mesh) -> datastructures_pb2.MeshData:
         proto_data.name = mesh.name or "Mesh"
 
     # Vertices as a flat coordinate array (3 doubles per vertex) instead of a message per vertex.
+    # Read x/y/z straight from the vertex attribute dict (always set by add_vertex) and fill the
+    # packed field in one extend, avoiding a vertex_coordinates() call and a proto call per vertex.
     index_map = {}  # vertex_key → index
     vertex_keys = []
-    for index, key in enumerate(mesh.vertices()):
-        x, y, z = mesh.vertex_coordinates(key)
-        proto_data.vertices.extend((x, y, z))
+    coords = []
+    for index, (key, attr) in enumerate(mesh.vertex.items()):
+        coords.append(attr["x"])
+        coords.append(attr["y"])
+        coords.append(attr["z"])
         index_map[key] = index
         vertex_keys.append(key)
+    proto_data.vertices.extend(coords)
 
     # Faces in CSR form: concatenated indices + per-face vertex counts.
     face_keys = []
+    face_vertices = []
+    face_sizes = []
     for fkey in mesh.faces():
         indices = [index_map[vkey] for vkey in mesh.face_vertices(fkey)]
-        proto_data.face_vertices.extend(indices)
-        proto_data.face_sizes.append(len(indices))
+        face_vertices.extend(indices)
+        face_sizes.append(len(indices))
         face_keys.append(fkey)
+    proto_data.face_vertices.extend(face_vertices)
+    proto_data.face_sizes.extend(face_sizes)
 
     # Defaults + top-level attributes as inline maps (empty ones cost 0 bytes).
     _fill_attr_map(proto_data.attributes, mesh.attributes)

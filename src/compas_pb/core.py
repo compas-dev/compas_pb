@@ -106,7 +106,6 @@ def any_to_pb(obj: Union[compas.data.Data, int, float, bool, str, bytes]) -> mes
         :class: `compas_pb.generated.message_pb2.AnyData`
             The protobuf message type of AnyData.
     """
-    _ensure_serializers()
     proto_data = message_pb2.AnyData()
 
     try:
@@ -136,8 +135,6 @@ def any_from_pb(proto_data: message_pb2.AnyData) -> Union[compas.data.Data, int,
     Union[compas.data.Data, list, dict, int, float, bool, str]
         The converted object. Can be a COMPAS Data object, list, dict, or primitive type.
     """
-    _ensure_serializers()
-
     union_field = proto_data.WhichOneof("data")
     if union_field == "value":
         return primitive_from_pb(proto_data)
@@ -182,6 +179,7 @@ def serialize_message(data) -> message_pb2.MessageData:
     if not data:
         raise ValueError("No message data to convert.")
 
+    _ensure_serializers()
     message_data = _serializer_any(data)
     message = message_pb2.MessageData(data=message_data, version=_CURRENT_VERSION)
     return message
@@ -304,6 +302,7 @@ def deserialize_message_bts(binary_data) -> message_pb2.MessageData:
     if not binary_data:
         raise ValueError("Binary data is empty.")
 
+    _ensure_serializers()
     any_data = message_pb2.MessageData()
     any_data.ParseFromString(binary_data)
 
@@ -329,6 +328,7 @@ def deserialize_message_from_json(json_data: str) -> dict:
     if not json_data:
         raise ValueError("No message data to convert.")
 
+    _ensure_serializers()
     message = message_pb2.MessageData()
     json_message = Parse(json_data, message)
 
@@ -347,11 +347,11 @@ def _deserialize_any(data: Union[message_pb2.AnyData, message_pb2.ListData, mess
         data_offset = _deserialize_list(data.list_value)
     elif field == "dict_value":
         data_offset = _deserialize_dict(data.dict_value)
-    elif data.message.Is(message_pb2.ListData.DESCRIPTOR):  # legacy: list packed in Any
+    elif field == "message" and data.message.Is(message_pb2.ListData.DESCRIPTOR):  # legacy: list in Any
         list_data = message_pb2.ListData()
         data.message.Unpack(list_data)
         data_offset = _deserialize_list(list_data)
-    elif data.message.Is(message_pb2.DictData.DESCRIPTOR):  # legacy: dict packed in Any
+    elif field == "message" and data.message.Is(message_pb2.DictData.DESCRIPTOR):  # legacy: dict in Any
         dict_data = message_pb2.DictData()
         data.message.Unpack(dict_data)
         data_offset = _deserialize_dict(dict_data)
