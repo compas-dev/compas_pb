@@ -40,6 +40,9 @@ from compas_pb.generated import datastructures_pb2
 from compas_pb.generated import geometry_pb2
 from compas_pb.generated import message_pb2
 
+from .registry import pb_deserializer
+from .registry import pb_serializer
+
 
 def _fill_attr_map(dest_map, data_dict):
     """Populate a ``map<string, AnyData>`` proto field from a Python dict.
@@ -138,8 +141,6 @@ def _read_attribute_columns(columns, index_to_key, target):
         for idx, value in zip(indices, values):
             target[index_to_key[idx]][col.name] = value
 
-from .registry import pb_deserializer
-from .registry import pb_serializer
 
 # =============================================================================
 # Point
@@ -455,7 +456,7 @@ def mesh_from_pb(proto_data: datastructures_pb2.MeshData) -> Mesh:
     face_map = []
     offset = 0
     for size in proto_data.face_sizes:
-        indices = [vertex_map[i] for i in proto_data.face_vertices[offset:offset + size]]
+        indices = [vertex_map[i] for i in proto_data.face_vertices[offset : offset + size]]
         face_map.append(mesh.add_face(indices))
         offset += size
 
