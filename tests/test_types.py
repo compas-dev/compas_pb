@@ -1,11 +1,10 @@
+from uuid import uuid4
+
 from compas_pb import pb_dump_bts
 from compas_pb import pb_load_bts
 
 
 def test_explicit_guid_is_preserved():
-    # An explicitly assigned guid round-trips.
-    from uuid import uuid4
-
     from compas.geometry import Point
 
     point = Point(1.0, 2.0, 3.0)
@@ -29,11 +28,13 @@ def test_serialize_frame():
     from compas.geometry import Frame
 
     frame = Frame([1, 2, 3], [4, 5, 6], [7, 8, 9])
+    assert frame.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(frame)
     new_frame = pb_load_bts(bts)
 
     assert isinstance(new_frame, Frame)
+    assert str(new_frame.guid) == str(frame.guid)
     assert new_frame.point == frame.point
     assert new_frame.xaxis == frame.xaxis
     assert new_frame.yaxis == frame.yaxis
@@ -43,11 +44,13 @@ def test_serialize_point():
     from compas.geometry import Point
 
     point = Point(1, 2, 3)
+    assert point.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(point)
     new_point = pb_load_bts(bts)
 
     assert isinstance(new_point, Point)
+    assert str(new_point.guid) == str(point.guid)
     assert new_point.x == point.x
     assert new_point.y == point.y
     assert new_point.z == point.z
@@ -57,11 +60,13 @@ def test_serialize_vector():
     from compas.geometry import Vector
 
     vector = Vector(1, 2, 3)
+    assert vector.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(vector)
     new_vector = pb_load_bts(bts)
 
     assert isinstance(new_vector, Vector)
+    assert str(new_vector.guid) == str(vector.guid)
     assert new_vector.x == vector.x
     assert new_vector.y == vector.y
     assert new_vector.z == vector.z
@@ -71,11 +76,13 @@ def test_serialize_line():
     from compas.geometry import Line, Point
 
     line = Line(Point(1, 2, 3), Point(4, 5, 6))
+    assert line.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(line)
     new_line = pb_load_bts(bts)
 
     assert isinstance(new_line, Line)
+    assert str(new_line.guid) == str(line.guid)
     assert new_line.start == line.start
     assert new_line.end == line.end
 
@@ -111,11 +118,13 @@ def test_serialize_plane():
     from compas.geometry import Plane, Point, Vector
 
     plane = Plane(Point(1, 2, 3), Vector(0, 0, 1))
+    assert plane.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(plane)
     new_plane = pb_load_bts(bts)
 
     assert isinstance(new_plane, Plane)
+    assert str(new_plane.guid) == str(plane.guid)
     assert new_plane.point == plane.point
     assert new_plane.normal == plane.normal
 
@@ -124,11 +133,13 @@ def test_serialize_polygon():
     from compas.geometry import Polygon
 
     polygon = Polygon([(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)])
+    assert polygon.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(polygon)
     new_polygon = pb_load_bts(bts)
 
     assert isinstance(new_polygon, Polygon)
+    assert str(new_polygon.guid) == str(polygon.guid)
     assert len(new_polygon.points) == len(polygon.points)
     for orig_pt, new_pt in zip(polygon.points, new_polygon.points):
         assert orig_pt == new_pt
@@ -138,11 +149,13 @@ def test_serialize_box():
     from compas.geometry import Box
 
     box = Box.from_width_height_depth(2, 3, 4)
+    assert box.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(box)
     new_box = pb_load_bts(bts)
 
     assert isinstance(new_box, Box)
+    assert str(new_box.guid) == str(box.guid)
     assert new_box.xsize == box.xsize
     assert new_box.ysize == box.ysize
     assert new_box.zsize == box.zsize
@@ -172,12 +185,14 @@ def test_serialize_sphere():
     from compas.tolerance import TOL
 
     sphere = Sphere(radius=2.0, frame=Frame.worldXY())
+    assert sphere.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(sphere)
     new_sphere = pb_load_bts(bts)
 
     assert isinstance(new_sphere, Sphere)
     assert TOL.is_close(new_sphere.radius, sphere.radius)
+    assert str(new_sphere.guid) == str(sphere.guid)
     assert new_sphere.frame.point == sphere.frame.point
 
 
@@ -186,6 +201,7 @@ def test_serialize_cylinder():
     from compas.tolerance import TOL
 
     cylinder = Cylinder(radius=1.5, height=3.0, frame=Frame.worldXY())
+    assert cylinder.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(cylinder)
     new_cylinder = pb_load_bts(bts)
@@ -193,6 +209,7 @@ def test_serialize_cylinder():
     assert isinstance(new_cylinder, Cylinder)
     assert TOL.is_close(new_cylinder.radius, cylinder.radius)
     assert TOL.is_close(new_cylinder.height, cylinder.height)
+    assert str(new_cylinder.guid) == str(cylinder.guid)
     assert new_cylinder.frame.point == cylinder.frame.point
 
 
@@ -201,6 +218,7 @@ def test_serialize_cone():
     from compas.tolerance import TOL
 
     cone = Cone(radius=1.0, height=2.5, frame=Frame.worldXY())
+    assert cone.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(cone)
     new_cone = pb_load_bts(bts)
@@ -208,6 +226,7 @@ def test_serialize_cone():
     assert isinstance(new_cone, Cone)
     assert TOL.is_close(new_cone.radius, cone.radius)
     assert TOL.is_close(new_cone.height, cone.height)
+    assert str(new_cone.guid) == str(cone.guid)
     assert new_cone.frame.point == cone.frame.point
 
 
@@ -216,6 +235,7 @@ def test_serialize_torus():
     from compas.tolerance import TOL
 
     torus = Torus(radius_axis=2.0, radius_pipe=0.5, frame=Frame.worldXY())
+    assert torus.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(torus)
     new_torus = pb_load_bts(bts)
@@ -223,6 +243,7 @@ def test_serialize_torus():
     assert isinstance(new_torus, Torus)
     assert TOL.is_close(new_torus.radius_axis, torus.radius_axis)
     assert TOL.is_close(new_torus.radius_pipe, torus.radius_pipe)
+    assert str(new_torus.guid) == str(torus.guid)
     assert new_torus.frame.point == torus.frame.point
 
 
@@ -231,6 +252,7 @@ def test_serialize_ellipse():
     from compas.tolerance import TOL
 
     ellipse = Ellipse(major=3.0, minor=1.5, frame=Frame.worldXY())
+    assert ellipse.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(ellipse)
     new_ellipse = pb_load_bts(bts)
@@ -238,6 +260,7 @@ def test_serialize_ellipse():
     assert isinstance(new_ellipse, Ellipse)
     assert TOL.is_close(new_ellipse.major, ellipse.major)
     assert TOL.is_close(new_ellipse.minor, ellipse.minor)
+    assert str(new_ellipse.guid) == str(ellipse.guid)
     assert new_ellipse.frame.point == ellipse.frame.point
 
 
@@ -246,11 +269,13 @@ def test_serialize_polyline():
 
     points = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1]]
     polyline = Polyline(points)
+    assert polyline.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(polyline)
     new_polyline = pb_load_bts(bts)
 
     assert isinstance(new_polyline, Polyline)
+    assert str(new_polyline.guid) == str(polyline.guid)
     assert len(new_polyline.points) == len(polyline.points)
     for orig_pt, new_pt in zip(polyline.points, new_polyline.points):
         assert orig_pt == new_pt
@@ -261,11 +286,13 @@ def test_serialize_pointcloud():
 
     points = [Point(i, j, 0) for i in range(3) for j in range(3)]
     pointcloud = Pointcloud(points)
+    assert pointcloud.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(pointcloud)
     new_pointcloud = pb_load_bts(bts)
 
     assert isinstance(new_pointcloud, Pointcloud)
+    assert str(new_pointcloud.guid) == str(pointcloud.guid)
     assert len(new_pointcloud.points) == len(pointcloud.points)
     for orig_pt, new_pt in zip(pointcloud.points, new_pointcloud.points):
         assert orig_pt == new_pt
@@ -275,11 +302,13 @@ def test_serialize_transformation():
     from compas.geometry import Transformation, Frame
 
     transformation = Transformation.from_frame_to_frame(Frame.worldXY(), Frame([1, 2, 3], [1, 0, 0], [0, 1, 0]))
+    assert transformation.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(transformation)
     new_transformation = pb_load_bts(bts)
 
     assert isinstance(new_transformation, Transformation)
+    assert str(new_transformation.guid) == str(transformation.guid)
     # Compare matrices element by element with tolerance
     for i in range(4):
         for j in range(4):
@@ -290,11 +319,13 @@ def test_serialize_translation():
     from compas.geometry import Translation
 
     translation = Translation.from_vector([1.5, 2.5, 3.5])
+    assert translation.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(translation)
     new_translation = pb_load_bts(bts)
 
     assert isinstance(new_translation, Translation)
+    assert str(new_translation.guid) == str(translation.guid)
     assert new_translation.translation_vector == translation.translation_vector
 
 
@@ -303,11 +334,13 @@ def test_serialize_rotation():
     import math
 
     rotation = Rotation.from_axis_and_angle([0, 0, 1], math.pi / 4)
+    assert rotation.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(rotation)
     new_rotation = pb_load_bts(bts)
 
     assert isinstance(new_rotation, Rotation)
+    assert str(new_rotation.guid) == str(rotation.guid)
     # Compare axis and angle with tolerance
     orig_axis_angle = rotation.axis_and_angle
     new_axis_angle = new_rotation.axis_and_angle
@@ -323,11 +356,13 @@ def test_serialize_capsule():
     from compas.tolerance import TOL
 
     capsule = Capsule(radius=1.0, height=2.0, frame=Frame.worldXY())
+    assert capsule.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(capsule)
     new_capsule = pb_load_bts(bts)
 
     assert isinstance(new_capsule, Capsule)
+    assert str(new_capsule.guid) == str(capsule.guid)
     assert TOL.is_close(new_capsule.radius, capsule.radius)
     assert TOL.is_close(new_capsule.height, capsule.height)
     assert new_capsule.frame.point == capsule.frame.point
@@ -338,11 +373,13 @@ def test_serialize_quaternion():
     from compas.tolerance import TOL
 
     quaternion = Quaternion(1.0, 0.0, 0.0, 0.0)
+    assert quaternion.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(quaternion)
     new_quaternion = pb_load_bts(bts)
 
     assert isinstance(new_quaternion, Quaternion)
+    assert str(new_quaternion.guid) == str(quaternion.guid)
     assert TOL.is_close(new_quaternion.w, quaternion.w)
     assert TOL.is_close(new_quaternion.x, quaternion.x)
     assert TOL.is_close(new_quaternion.y, quaternion.y)
@@ -353,11 +390,13 @@ def test_serialize_scale():
     from compas.geometry import Scale
 
     scale = Scale.from_factors([2.0, 3.0, 4.0])
+    assert scale.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(scale)
     new_scale = pb_load_bts(bts)
 
     assert isinstance(new_scale, Scale)
+    assert str(new_scale.guid) == str(scale.guid)
     # Compare matrices element by element with tolerance
     for i in range(4):
         for j in range(4):
@@ -369,11 +408,13 @@ def test_serialize_reflection():
 
     plane = Plane(Point(0, 0, 0), Vector(0, 0, 1))
     reflection = Reflection.from_plane(plane)
+    assert reflection.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(reflection)
     new_reflection = pb_load_bts(bts)
 
     assert isinstance(new_reflection, Reflection)
+    assert str(new_reflection.guid) == str(reflection.guid)
     # Compare matrices element by element with tolerance
     for i in range(4):
         for j in range(4):
@@ -384,11 +425,13 @@ def test_serialize_shear():
     from compas.geometry import Shear, Vector, Plane
 
     shear = Shear.from_angle_direction_plane(angle=0.5, direction=Vector(1, 0, 0), plane=Plane.worldXY())
+    assert shear.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(shear)
     new_shear = pb_load_bts(bts)
 
     assert isinstance(new_shear, Shear)
+    assert str(new_shear.guid) == str(shear.guid)
     # Compare matrices element by element with tolerance
     for i in range(4):
         for j in range(4):
@@ -399,11 +442,13 @@ def test_serialize_projection():
     from compas.geometry import Projection, Plane
 
     projection = Projection.from_plane(Plane.worldXY())
+    assert projection.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(projection)
     new_projection = pb_load_bts(bts)
 
     assert isinstance(new_projection, Projection)
+    assert str(new_projection.guid) == str(projection.guid)
     # Compare matrices element by element with tolerance
     for i in range(4):
         for j in range(4):
@@ -415,11 +460,13 @@ def test_serialize_bezier():
 
     points = [[0, 0, 0], [1, 1, 0], [2, 0, 0]]
     bezier = Bezier(points)
+    assert bezier.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(bezier)
     new_bezier = pb_load_bts(bts)
 
     assert isinstance(new_bezier, Bezier)
+    assert str(new_bezier.guid) == str(bezier.guid)
     assert len(new_bezier.points) == len(bezier.points)
     assert new_bezier.degree == bezier.degree
     for orig_pt, new_pt in zip(bezier.points, new_bezier.points):
@@ -431,11 +478,13 @@ def test_serialize_hyperbola():
     from compas.tolerance import TOL
 
     hyperbola = Hyperbola(major=2.0, minor=1.0, frame=Frame.worldXY())
+    assert hyperbola.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(hyperbola)
     new_hyperbola = pb_load_bts(bts)
 
     assert isinstance(new_hyperbola, Hyperbola)
+    assert str(new_hyperbola.guid) == str(hyperbola.guid)
     assert TOL.is_close(new_hyperbola.major, hyperbola.major)
     assert TOL.is_close(new_hyperbola.minor, hyperbola.minor)
     assert new_hyperbola.frame.point == hyperbola.frame.point
@@ -446,11 +495,13 @@ def test_serialize_parabola():
     from compas.tolerance import TOL
 
     parabola = Parabola(focal=1.0, frame=Frame.worldXY())
+    assert parabola.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(parabola)
     new_parabola = pb_load_bts(bts)
 
     assert isinstance(new_parabola, Parabola)
+    assert str(new_parabola.guid) == str(parabola.guid)
     assert TOL.is_close(new_parabola.focal, parabola.focal)
     assert new_parabola.frame.point == parabola.frame.point
 
@@ -462,11 +513,13 @@ def test_serialize_polyhedron():
     box = Box(1, 1, 1)
     vertices, faces = box.to_vertices_and_faces()
     polyhedron = Polyhedron(vertices, faces)
+    assert polyhedron.guid is not None  # This generates a guid
 
     bts = pb_dump_bts(polyhedron)
     new_polyhedron = pb_load_bts(bts)
 
     assert isinstance(new_polyhedron, Polyhedron)
+    assert str(new_polyhedron.guid) == str(polyhedron.guid)
     assert len(new_polyhedron.vertices) == len(polyhedron.vertices)
     assert len(new_polyhedron.faces) == len(polyhedron.faces)
     for orig_vertex, new_vertex in zip(polyhedron.vertices, new_polyhedron.vertices):

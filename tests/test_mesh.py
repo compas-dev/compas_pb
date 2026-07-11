@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 from compas.geometry import Box
@@ -9,7 +11,9 @@ from compas_pb import pb_load_bts
 @pytest.fixture
 def box_mesh():
     box = Box(1.0)
-    return Mesh.from_shape(box)
+    mesh = Mesh.from_shape(box)
+    mesh._guid = uuid.uuid4()
+    return mesh
 
 
 def test_serialize_deserialize_box_mesh(box_mesh):
@@ -17,6 +21,7 @@ def test_serialize_deserialize_box_mesh(box_mesh):
     mesh2 = pb_load_bts(data)
 
     assert isinstance(mesh2, Mesh)
+    assert str(mesh2.guid) == str(box_mesh.guid)
     assert mesh2.number_of_vertices() == box_mesh.number_of_vertices()
     assert mesh2.number_of_faces() == box_mesh.number_of_faces()
 
