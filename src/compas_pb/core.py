@@ -2,7 +2,6 @@ import base64
 from importlib.metadata import version
 from typing import Any
 from typing import Union
-from warnings import warn
 
 import compas
 from compas.data import Data
@@ -308,8 +307,7 @@ def deserialize_message_bts(binary_data) -> message_pb2.MessageData:
     any_data = message_pb2.MessageData()
     any_data.ParseFromString(binary_data)
 
-    if not _check_version_compatibility(any_data):
-        warn(f"Current version {_CURRENT_VERSION} is not compatible with: {any_data.version}", UserWarning)
+    _check_version_compatibility(any_data)
 
     return any_data.data
 
@@ -337,8 +335,7 @@ def deserialize_message_from_json(json_data: str) -> dict:
     any_data = message_pb2.MessageData()
     any_data.CopyFrom(json_message)
 
-    if not _check_version_compatibility(any_data):
-        warn(f"Current version {_CURRENT_VERSION} is not compatible with: {any_data.version}", UserWarning)
+    _check_version_compatibility(any_data)
 
     return _deserialize_any(any_data.data)
 
@@ -385,13 +382,33 @@ def _deserialize_fallback(data_dict: message_pb2.AnyData) -> Data:
     return _decode_dict(obj_data)
 
 
-def _check_version_compatibility(any_data: message_pb2.MessageData) -> bool:
-    """Check if the message version is compatible with the current version."""
-    # for accept empty version string
-    # Not sure if this is a good idea
-    if any_data.version is None or any_data.version == "":
-        warn("No version info found in the message, it may cause deserialization issues.", UserWarning)
-        return True
-    if any_data.version != _CURRENT_VERSION:
-        return False
-    return True
+def _wire_compat_key(version_str: str) -> str:
+    """Wire-compatibility key of a version: ``MAJOR.MINOR``.
+
+    Under 0.x every minor release may change the binary schema, so ``0.5.x`` is compatible
+    with ``0.5.y`` but not with ``0.6.x``; from 1.0 on, ``MAJOR`` is the boundary and this
+    still keys on ``MAJOR.MINOR`` (a stricter, always-safe superset).
+    """
+    parts = str(version_str).split(".")
+    return "{}.{}".format(parts[0], parts[1]) if len(parts) >= 2 else str(version_str)
+
+
+def _check_version_compatibility(any_data: message_pb2.MessageData) -> None:
+    """Raise if the message's wire version is incompatible with this build.
+
+    compas_pb reuses protobuf field numbers across format revisions, so data written by an
+    incompatible version can *silently misparse* rather than fail cleanly. A missing or
+    mismatched wire version is therefore a hard error, not a warning.
+    """
+    incoming = any_data.version or ""
+    if not incoming:
+        raise ValueError(
+            "No version tag in the message; cannot verify compas_pb wire-format compatibility "
+            "(reader is {}).".format(_CURRENT_VERSION)
+        )
+    if _wire_compat_key(incoming) != _wire_compat_key(_CURRENT_VERSION):
+        raise ValueError(
+            "Incompatible compas_pb wire format: message was written by version {} but this "
+            "reader is {}. The binary schema differs between these versions; re-serialize the "
+            "source or read it with a matching compas_pb version.".format(incoming, _CURRENT_VERSION)
+        )
