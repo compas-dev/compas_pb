@@ -195,8 +195,9 @@ def test_json_structure_validation():
     parsed = json.loads(json_string)
 
     assert "data" in parsed
-    # For lists, check if it uses message or value field
-    assert "message" in parsed["data"] or "value" in parsed["data"]
+    # A plain list now uses the explicit listValue arm (no google.protobuf.Any wrapper);
+    # registered types still use message, primitives use value.
+    assert any(k in parsed["data"] for k in ("listValue", "message", "value"))
 
 
 def test_json_exact_match():
@@ -210,13 +211,12 @@ def test_json_exact_match():
 
     parsed = json.loads(json_string)
 
-    # Expected structure for a Point
+    # Expected structure for a Point. An auto-generated guid and the default name ("Point")
+    # are not serialized, so they are absent from the message.
     expected_structure = {
         "data": {
             "message": {
                 "@type": "type.googleapis.com/compas_pb.data.PointData",
-                "guid": parsed["data"]["message"]["guid"],  # GUID is dynamic, so we use the actual one
-                "name": "Point",
                 "x": 1.0,
                 "y": 2.0,
                 "z": 3.0,

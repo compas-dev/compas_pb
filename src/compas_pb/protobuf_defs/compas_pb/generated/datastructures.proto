@@ -2,29 +2,42 @@ syntax = "proto3";
 
 package compas_pb.data;
 
-import "compas_pb/generated/geometry.proto";
 import "compas_pb/generated/message.proto";
 
 // ============================================================================
 // Data Structures
 // ============================================================================
 
-message FaceList {
-    repeated uint32 indices = 1;
+// A single vertex attribute stored column-wise across vertices.
+// If `indices` is empty the column is dense: one value per vertex, in vertex order.
+// Otherwise `indices[k]` is the vertex index carrying the k-th value (sparse).
+// Exactly one of the typed arrays / `values` is populated, selected by `kind`.
+message AttributeColumn {
+  string name = 1;
+  repeated uint32 indices = 2;
+  uint32 kind = 3;              // 0 = double, 1 = int, 2 = bool, 3 = generic AnyData
+  repeated double doubles = 4;
+  repeated sint64 ints = 5;
+  repeated bool bools = 6;
+  repeated AnyData values = 7;  // mixed / non-numeric columns
 }
 
 message MeshData {
   optional string guid = 1;
   optional string name = 2;
-  repeated PointData vertices = 3;
-  repeated FaceList faces = 4;
-  DictData attributes = 5;
-  DictData vertex_attributes = 6;
-  DictData face_attributes = 7;
-  DictData edge_attributes = 8;
-  DictData default_vertex_attributes = 9;
-  DictData default_face_attributes = 10;
-  DictData default_edge_attributes = 11;
+  repeated double vertices = 3; // flat coordinate array: 3 doubles (x, y, z) per vertex
+  // Faces in CSR form: all face vertex indices concatenated, with face_sizes giving the
+  // vertex count of each face (so face i spans the next face_sizes[i] entries).
+  repeated uint32 face_vertices = 4;
+  repeated uint32 face_sizes = 12;
+  map<string, AnyData> attributes = 5;
+  repeated AttributeColumn vertex_attribute_columns = 6; // vertex attrs, column-wise (by vertex index)
+  repeated AttributeColumn face_attribute_columns = 7;   // face attrs, column-wise (by face index)
+  repeated AttributeColumn edge_attribute_columns = 8;   // edge attrs, column-wise (aligned to edge_keys)
+  repeated AnyData edge_keys = 13;                        // keys of edges carrying attributes
+  map<string, AnyData> default_vertex_attributes = 9;
+  map<string, AnyData> default_face_attributes = 10;
+  map<string, AnyData> default_edge_attributes = 11;
 }
 
 message FaceData {
@@ -34,16 +47,20 @@ message FaceData {
 message PolyhedronData {
     optional string guid = 1;
     optional string name = 2;
-    repeated PointData vertices = 3;
+    repeated double vertices = 3; // flat x,y,z triplets
     repeated FaceData faces = 4;
 }
 
 message GraphData {
   optional string guid = 1;
   optional string name = 2;
-  DictData nodes = 3;
-  DictData edges = 4;
-  DictData attributes = 5;
-  DictData default_node_attributes = 6;
-  DictData default_edge_attributes = 7;
+  repeated AnyData node_keys = 3;               // node keys in order (arbitrary hashable)
+  repeated AttributeColumn node_attributes = 4; // column-wise, including x/y/z coordinates
+  map<string, AnyData> attributes = 5;
+  map<string, AnyData> default_node_attributes = 6;
+  map<string, AnyData> default_edge_attributes = 7;
+  // Edges as index pairs into node_keys, with edge attributes stored column-wise.
+  repeated uint32 edge_u = 8;
+  repeated uint32 edge_v = 9;
+  repeated AttributeColumn edge_attributes = 10;
 }

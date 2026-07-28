@@ -1,4 +1,3 @@
-from ast import literal_eval
 from uuid import UUID
 
 from compas.datastructures import Graph
@@ -33,13 +32,115 @@ from compas.geometry import Transformation
 from compas.geometry import Translation
 from compas.geometry import Vector
 
+from compas_pb.core import _deserialize_any
 from compas_pb.core import _deserialize_dict
 from compas_pb.core import _serialize_dict
+from compas_pb.core import _serializer_any
 from compas_pb.generated import datastructures_pb2
 from compas_pb.generated import geometry_pb2
+from compas_pb.generated import message_pb2
 
 from .registry import pb_deserializer
 from .registry import pb_serializer
+
+
+def _fill_attr_map(dest_map, data_dict):
+    """Populate a ``map<string, AnyData>`` proto field from a Python dict.
+
+    Empty dicts are skipped, so absent/empty attribute maps cost zero bytes on the wire.
+    """
+    if data_dict:
+        dest_map.MergeFrom(_serialize_dict(data_dict).items)
+
+
+def _read_attr_map(src_map):
+    """Read a ``map<string, AnyData>`` proto field back into a Python dict."""
+    wrapper = message_pb2.DictData()
+    wrapper.items.MergeFrom(src_map)
+    return _deserialize_dict(wrapper)
+
+
+def _extend_flat_points(dest_field, points):
+    """Append points to a flat ``repeated double`` field as consecutive x, y, z triplets.
+
+    This replaces a full ``PointData`` message per point (which also carried a per-point
+    UUID/name) with three packed doubles, the dominant size/speed win for point-heavy types.
+    """
+    for pt in points:
+        x, y, z = pt
+        dest_field.extend((x, y, z))
+
+
+def _flat_points_to_lists(flat):
+    """Read a flat ``repeated double`` field back into a list of ``[x, y, z]`` lists."""
+    return [[flat[i], flat[i + 1], flat[i + 2]] for i in range(0, len(flat), 3)]
+
+
+_COORD_KEYS = ("x", "y", "z")
+
+
+def _fill_attribute_columns(dest, ordered_attrs, exclude=()):
+    """Write per-element attribute dicts column-wise into a repeated ``AttributeColumn`` field.
+
+    ``ordered_attrs`` is a list of attribute dicts in element order (an element's index is its
+    position). Instead of a dict (and a repeated attribute-name string) per element, each
+    attribute name is stored once with a packed value array. Numeric columns use packed
+    ``double``/``int``/``bool`` arrays (no per-value framing, bulk-decodable); mixed columns fall
+    back to ``AnyData``. A dense column (every element in order) stores no ``indices``.
+
+    ``exclude`` names are skipped, e.g. mesh vertex coordinates that live in a separate flat
+    array; for a graph nothing is excluded because coordinates live in the node attributes.
+    """
+    count = len(ordered_attrs)
+    columns = {}  # name -> list of (index, value), in element order
+    for idx, attr in enumerate(ordered_attrs):
+        for name, value in attr.items():
+            if name in exclude:
+                continue
+            columns.setdefault(name, []).append((idx, value))
+
+    for name, pairs in columns.items():
+        pairs.sort(key=lambda p: p[0])
+        indices = [i for i, _ in pairs]
+        values = [v for _, v in pairs]
+        col = dest.add()
+        col.name = name
+        if indices != list(range(count)):  # sparse: record which elements carry the attribute
+            col.indices.extend(indices)
+        if values and all(type(v) is float for v in values):
+            col.kind = 0
+            col.doubles.extend(values)
+        elif values and all(type(v) is int for v in values):  # type() is int excludes bool
+            col.kind = 1
+            col.ints.extend(values)
+        elif values and all(type(v) is bool for v in values):
+            col.kind = 2
+            col.bools.extend(values)
+        else:
+            col.kind = 3
+            for v in values:
+                col.values.append(_serializer_any(v))
+
+
+def _read_attribute_columns(columns, index_to_key, target):
+    """Apply column-wise attributes back onto per-element attribute dicts.
+
+    ``index_to_key`` maps an integer index to the element key; ``target`` maps element key to
+    the mutable attribute dict to update.
+    """
+    for col in columns:
+        if col.kind == 0:
+            values = list(col.doubles)
+        elif col.kind == 1:
+            values = list(col.ints)
+        elif col.kind == 2:
+            values = list(col.bools)
+        else:
+            values = [_deserialize_any(v) for v in col.values]
+        indices = list(col.indices) if col.indices else range(len(values))
+        for idx, value in zip(indices, values):
+            target[index_to_key[idx]][col.name] = value
+
 
 # =============================================================================
 # Point
@@ -62,8 +163,10 @@ def point_to_pb(obj: Point) -> geometry_pb2.PointData:
         The protobuf message representing the Point.
     """
     proto_data = geometry_pb2.PointData()
-    proto_data.guid = str(obj.guid)
-    proto_data.name = obj.name
+    if obj._guid is not None:
+        proto_data.guid = str(obj._guid)
+    if obj._name is not None:
+        proto_data.name = obj.name
     proto_data.x = obj.x
     proto_data.y = obj.y
     proto_data.z = obj.z
@@ -85,8 +188,9 @@ def point_from_pb(proto_data: geometry_pb2.PointData) -> Point:
     Point
         The deserialized COMPAS Point object.
     """
-    result = Point(x=proto_data.x, y=proto_data.y, z=proto_data.z, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Point(x=proto_data.x, y=proto_data.y, z=proto_data.z, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -111,8 +215,10 @@ def line_to_pb(line_obj: Line) -> geometry_pb2.LineData:
         The protobuf message representing the Line.
     """
     proto_data = geometry_pb2.LineData()
-    proto_data.guid = str(line_obj.guid)
-    proto_data.name = line_obj.name
+    if line_obj._guid is not None:
+        proto_data.guid = str(line_obj._guid)
+    if line_obj._name is not None:
+        proto_data.name = line_obj.name
 
     start = point_to_pb(line_obj.start)
     end = point_to_pb(line_obj.end)
@@ -141,8 +247,9 @@ def line_from_pb(proto_data: geometry_pb2.LineData) -> Line:
     start = point_from_pb(proto_data.start)
     end = point_from_pb(proto_data.end)
 
-    result = Line(start=start, end=end, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Line(start=start, end=end, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -167,8 +274,10 @@ def vector_to_pb(obj: Vector) -> geometry_pb2.VectorData:
         The protobuf message representing the Vector.
     """
     proto_data = geometry_pb2.VectorData()
-    proto_data.name = obj.name
-    proto_data.guid = str(obj.guid)
+    if obj._name is not None:
+        proto_data.name = obj.name
+    if obj._guid is not None:
+        proto_data.guid = str(obj._guid)
     proto_data.x = obj.x
     proto_data.y = obj.y
     proto_data.z = obj.z
@@ -190,8 +299,9 @@ def vector_from_pb(proto_data: geometry_pb2.VectorData) -> Vector:
     Vector
         The deserialized COMPAS Vector object.
     """
-    result = Vector(x=proto_data.x, y=proto_data.y, z=proto_data.z, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Vector(x=proto_data.x, y=proto_data.y, z=proto_data.z, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -216,8 +326,10 @@ def frame_to_pb(frame_obj: Frame) -> geometry_pb2.FrameData:
         The protobuf message representing the Frame.
     """
     proto_data = geometry_pb2.FrameData()
-    proto_data.guid = str(frame_obj.guid)
-    proto_data.name = frame_obj.name
+    if frame_obj._guid is not None:
+        proto_data.guid = str(frame_obj._guid)
+    if frame_obj._name is not None:
+        proto_data.name = frame_obj.name
 
     origin = point_to_pb(frame_obj.point)
     xaxis = vector_to_pb(frame_obj.xaxis)
@@ -248,8 +360,9 @@ def frame_from_pb(proto_data: geometry_pb2.FrameData) -> Frame:
     origin = point_from_pb(proto_data.point)
     xaxis = vector_from_pb(proto_data.xaxis)
     yaxis = vector_from_pb(proto_data.yaxis)
-    result = Frame(point=origin, xaxis=xaxis, yaxis=yaxis, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Frame(point=origin, xaxis=xaxis, yaxis=yaxis, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -273,32 +386,45 @@ def mesh_to_pb(mesh: Mesh) -> datastructures_pb2.MeshData:
         The protobuf message representing the Mesh.
     """
     proto_data = datastructures_pb2.MeshData()
-    proto_data.guid = str(mesh.guid)
-    proto_data.name = mesh.name or "Mesh"
+    if mesh._guid is not None:
+        proto_data.guid = str(mesh._guid)
+    if mesh._name is not None:
+        proto_data.name = mesh.name or "Mesh"
 
+    # Vertices as a flat coordinate array (3 doubles per vertex) instead of a message per vertex.
     index_map = {}  # vertex_key → index
-    for index, (key, attr) in enumerate(mesh.vertices(data=True)):
-        point = Point(*mesh.vertex_coordinates(key))
-        proto_data.vertices.append(point_to_pb(point))
+    vertex_keys = []
+    for index, key in enumerate(mesh.vertices()):
+        x, y, z = mesh.vertex_coordinates(key)
+        proto_data.vertices.extend((x, y, z))
         index_map[key] = index
+        vertex_keys.append(key)
 
+    # Faces in CSR form: concatenated indices + per-face vertex counts.
+    face_keys = []
     for fkey in mesh.faces():
         indices = [index_map[vkey] for vkey in mesh.face_vertices(fkey)]
-        face_msg = datastructures_pb2.FaceList()
-        face_msg.indices.extend(indices)
-        proto_data.faces.append(face_msg)
+        proto_data.face_vertices.extend(indices)
+        proto_data.face_sizes.append(len(indices))
+        face_keys.append(fkey)
 
-    proto_data.attributes.CopyFrom(_serialize_dict(mesh.attributes))
-    proto_data.default_edge_attributes.CopyFrom(_serialize_dict(mesh.default_edge_attributes))
-    proto_data.default_face_attributes.CopyFrom(_serialize_dict(mesh.default_face_attributes))
-    proto_data.default_vertex_attributes.CopyFrom(_serialize_dict(mesh.default_vertex_attributes))
+    # Defaults + top-level attributes as inline maps (empty ones cost 0 bytes).
+    _fill_attr_map(proto_data.attributes, mesh.attributes)
+    _fill_attr_map(proto_data.default_edge_attributes, mesh.default_edge_attributes)
+    _fill_attr_map(proto_data.default_face_attributes, mesh.default_face_attributes)
+    _fill_attr_map(proto_data.default_vertex_attributes, mesh.default_vertex_attributes)
 
-    proto_data.edge_attributes.CopyFrom(_serialize_dict(mesh.edgedata))
-    proto_data.face_attributes.CopyFrom(_serialize_dict({str(k): v for k, v in mesh.facedata.items()}))
-    vertices_attributes = {}
-    for k, vertex_attributes in mesh.vertex.items():
-        vertices_attributes[str(k)] = {attr_key: attr_value for attr_key, attr_value in vertex_attributes.items() if attr_key not in "xyz"}
-    proto_data.vertex_attributes.CopyFrom(_serialize_dict(vertices_attributes))
+    # Per-element attributes stored column-wise.
+    _fill_attribute_columns(
+        proto_data.vertex_attribute_columns,
+        [mesh.vertex[k] for k in vertex_keys],
+        exclude=_COORD_KEYS,
+    )
+    _fill_attribute_columns(proto_data.face_attribute_columns, [mesh.facedata.get(k, {}) for k in face_keys])
+    edge_items = [(k, v) for k, v in mesh.edgedata.items() if v]
+    for key, _ in edge_items:
+        proto_data.edge_keys.append(_serializer_any(key))
+    _fill_attribute_columns(proto_data.edge_attribute_columns, [v for _, v in edge_items])
 
     return proto_data
 
@@ -318,27 +444,38 @@ def mesh_from_pb(proto_data: datastructures_pb2.MeshData) -> Mesh:
     Mesh
         The deserialized COMPAS Mesh object.
     """
-    mesh = Mesh(name=proto_data.name)
+    mesh = Mesh(name=(proto_data.name or None))
     vertex_map = []
 
-    for pb_point in proto_data.vertices:
-        point = point_from_pb(pb_point)
-        key = mesh.add_vertex(x=point.x, y=point.y, z=point.z)
+    # Flat coordinate array: consume 3 doubles (x, y, z) per vertex.
+    coords = proto_data.vertices
+    for i in range(0, len(coords), 3):
+        key = mesh.add_vertex(x=coords[i], y=coords[i + 1], z=coords[i + 2])
         vertex_map.append(key)
 
-    for face in proto_data.faces:
-        indices = [vertex_map[i] for i in face.indices]
-        mesh.add_face(indices)
+    face_map = []
+    offset = 0
+    for size in proto_data.face_sizes:
+        indices = [vertex_map[i] for i in proto_data.face_vertices[offset : offset + size]]
+        face_map.append(mesh.add_face(indices))
+        offset += size
 
-    mesh._guid = UUID(proto_data.guid)
-    mesh.default_edge_attributes.update(_deserialize_dict(proto_data.default_edge_attributes))
-    mesh.default_face_attributes.update(_deserialize_dict(proto_data.default_face_attributes))
-    mesh.default_vertex_attributes.update(_deserialize_dict(proto_data.default_vertex_attributes))
-    mesh.attributes.update(_deserialize_dict(proto_data.attributes))
-    mesh.edgedata.update(_deserialize_dict(proto_data.edge_attributes))
-    mesh.facedata.update({int(k): v for k, v in _deserialize_dict(proto_data.face_attributes).items()})
-    for vertex_key, vertex_attributes in _deserialize_dict(proto_data.vertex_attributes).items():
-        mesh.vertex[int(vertex_key)].update(vertex_attributes)
+    if proto_data.guid:
+        mesh._guid = UUID(proto_data.guid)
+    mesh.default_edge_attributes.update(_read_attr_map(proto_data.default_edge_attributes))
+    mesh.default_face_attributes.update(_read_attr_map(proto_data.default_face_attributes))
+    mesh.default_vertex_attributes.update(_read_attr_map(proto_data.default_vertex_attributes))
+    mesh.attributes.update(_read_attr_map(proto_data.attributes))
+
+    # Per-element attributes, column-wise.
+    _read_attribute_columns(proto_data.vertex_attribute_columns, vertex_map, mesh.vertex)
+    for fkey in face_map:
+        mesh.facedata.setdefault(fkey, {})
+    _read_attribute_columns(proto_data.face_attribute_columns, face_map, mesh.facedata)
+    edge_keys = [_deserialize_any(k) for k in proto_data.edge_keys]
+    for key in edge_keys:
+        mesh.edgedata.setdefault(key, {})
+    _read_attribute_columns(proto_data.edge_attribute_columns, edge_keys, mesh.edgedata)
 
     return mesh
 
@@ -387,8 +524,9 @@ def circle_from_pb(proto_data: geometry_pb2.CircleData) -> Circle:
         The deserialized COMPAS Circle object.
     """
     frame = frame_from_pb(proto_data.frame)
-    result = Circle(radius=proto_data.radius, frame=frame, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Circle(radius=proto_data.radius, frame=frame, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -413,8 +551,10 @@ def plane_to_pb(plane: Plane) -> geometry_pb2.PlaneData:
         The protobuf message representing the Plane.
     """
     proto_data = geometry_pb2.PlaneData()
-    proto_data.guid = str(plane.guid)
-    proto_data.name = plane.name
+    if plane._guid is not None:
+        proto_data.guid = str(plane._guid)
+    if plane._name is not None:
+        proto_data.name = plane.name
 
     point = point_to_pb(plane.point)
     normal = vector_to_pb(plane.normal)
@@ -442,8 +582,9 @@ def plane_from_pb(proto_data: geometry_pb2.PlaneData) -> Plane:
     """
     point = point_from_pb(proto_data.point)
     normal = vector_from_pb(proto_data.normal)
-    result = Plane(point=point, normal=normal, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Plane(point=point, normal=normal, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -468,12 +609,12 @@ def polygon_to_pb(polygon: Polygon) -> geometry_pb2.PolygonData:
         The protobuf message representing the Polygon.
     """
     proto_data = geometry_pb2.PolygonData()
-    proto_data.guid = str(polygon.guid)
-    proto_data.name = polygon.name
+    if polygon._guid is not None:
+        proto_data.guid = str(polygon._guid)
+    if polygon._name is not None:
+        proto_data.name = polygon.name
 
-    for point in polygon.points:
-        proto_point = point_to_pb(point)
-        proto_data.points.append(proto_point)
+    _extend_flat_points(proto_data.points, polygon.points)
 
     return proto_data
 
@@ -493,9 +634,10 @@ def polygon_from_pb(proto_data: geometry_pb2.PolygonData) -> Polygon:
     Polygon
         The deserialized COMPAS Polygon object.
     """
-    points = [point_from_pb(proto_point) for proto_point in proto_data.points]
-    result = Polygon(points=points, name=proto_data.name)
-    result._guid = proto_data.guid
+    points = _flat_points_to_lists(proto_data.points)
+    result = Polygon(points=points, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -520,8 +662,10 @@ def box_to_pb(box: Box) -> geometry_pb2.BoxData:
         The protobuf message representing the Box.
     """
     proto_data = geometry_pb2.BoxData()
-    proto_data.guid = str(box.guid)
-    proto_data.name = box.name
+    if box._guid is not None:
+        proto_data.guid = str(box._guid)
+    if box._name is not None:
+        proto_data.name = box.name
     proto_data.xsize = box.xsize
     proto_data.ysize = box.ysize
     proto_data.zsize = box.zsize
@@ -548,8 +692,9 @@ def box_from_pb(proto_data: geometry_pb2.BoxData) -> Box:
         The deserialized COMPAS Box object.
     """
     frame = frame_from_pb(proto_data.frame)
-    result = Box(frame=frame, xsize=proto_data.xsize, ysize=proto_data.ysize, zsize=proto_data.zsize, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Box(frame=frame, xsize=proto_data.xsize, ysize=proto_data.ysize, zsize=proto_data.zsize, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -574,8 +719,10 @@ def arc_to_pb(arc: Arc) -> geometry_pb2.ArcData:
         The protobuf message representing the Arc.
     """
     proto_data = geometry_pb2.ArcData()
-    proto_data.guid = str(arc.guid)
-    proto_data.name = arc.name
+    if arc._guid is not None:
+        proto_data.guid = str(arc._guid)
+    if arc._name is not None:
+        proto_data.name = arc.name
     proto_data.start_angle = arc.start_angle
     proto_data.end_angle = arc.end_angle
 
@@ -603,7 +750,8 @@ def arc_from_pb(proto_data: geometry_pb2.ArcData) -> Arc:
     circle = circle_from_pb(proto_data.circle)
     result = Arc.from_circle(circle, proto_data.start_angle, proto_data.end_angle)
     result.name = proto_data.name
-    result._guid = proto_data.guid
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -628,8 +776,10 @@ def sphere_to_pb(sphere: Sphere) -> geometry_pb2.SphereData:
         The protobuf message representing the Sphere.
     """
     proto_data = geometry_pb2.SphereData()
-    proto_data.guid = str(sphere.guid)
-    proto_data.name = sphere.name
+    if sphere._guid is not None:
+        proto_data.guid = str(sphere._guid)
+    if sphere._name is not None:
+        proto_data.name = sphere.name
     proto_data.radius = sphere.radius
 
     frame = frame_to_pb(sphere.frame)
@@ -654,8 +804,9 @@ def sphere_from_pb(proto_data: geometry_pb2.SphereData) -> Sphere:
         The deserialized COMPAS Sphere object.
     """
     frame = frame_from_pb(proto_data.frame)
-    result = Sphere(radius=proto_data.radius, frame=frame, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Sphere(radius=proto_data.radius, frame=frame, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -680,8 +831,10 @@ def cylinder_to_pb(cylinder: Cylinder) -> geometry_pb2.CylinderData:
         The protobuf message representing the Cylinder.
     """
     proto_data = geometry_pb2.CylinderData()
-    proto_data.guid = str(cylinder.guid)
-    proto_data.name = cylinder.name
+    if cylinder._guid is not None:
+        proto_data.guid = str(cylinder._guid)
+    if cylinder._name is not None:
+        proto_data.name = cylinder.name
     proto_data.radius = cylinder.radius
     proto_data.height = cylinder.height
 
@@ -707,8 +860,9 @@ def cylinder_from_pb(proto_data: geometry_pb2.CylinderData) -> Cylinder:
         The deserialized COMPAS Cylinder object.
     """
     frame = frame_from_pb(proto_data.frame)
-    result = Cylinder(radius=proto_data.radius, height=proto_data.height, frame=frame, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Cylinder(radius=proto_data.radius, height=proto_data.height, frame=frame, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -733,8 +887,10 @@ def cone_to_pb(cone: Cone) -> geometry_pb2.ConeData:
         The protobuf message representing the Cone.
     """
     proto_data = geometry_pb2.ConeData()
-    proto_data.guid = str(cone.guid)
-    proto_data.name = cone.name
+    if cone._guid is not None:
+        proto_data.guid = str(cone._guid)
+    if cone._name is not None:
+        proto_data.name = cone.name
     proto_data.radius = cone.radius
     proto_data.height = cone.height
 
@@ -760,8 +916,9 @@ def cone_from_pb(proto_data: geometry_pb2.ConeData) -> Cone:
         The deserialized COMPAS Cone object.
     """
     frame = frame_from_pb(proto_data.frame)
-    result = Cone(radius=proto_data.radius, height=proto_data.height, frame=frame, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Cone(radius=proto_data.radius, height=proto_data.height, frame=frame, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -786,8 +943,10 @@ def torus_to_pb(torus: Torus) -> geometry_pb2.TorusData:
         The protobuf message representing the Torus.
     """
     proto_data = geometry_pb2.TorusData()
-    proto_data.guid = str(torus.guid)
-    proto_data.name = torus.name
+    if torus._guid is not None:
+        proto_data.guid = str(torus._guid)
+    if torus._name is not None:
+        proto_data.name = torus.name
     proto_data.radius_axis = torus.radius_axis
     proto_data.radius_pipe = torus.radius_pipe
 
@@ -813,8 +972,9 @@ def torus_from_pb(proto_data: geometry_pb2.TorusData) -> Torus:
         The deserialized COMPAS Torus object.
     """
     frame = frame_from_pb(proto_data.frame)
-    result = Torus(radius_axis=proto_data.radius_axis, radius_pipe=proto_data.radius_pipe, frame=frame, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Torus(radius_axis=proto_data.radius_axis, radius_pipe=proto_data.radius_pipe, frame=frame, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -839,8 +999,10 @@ def ellipse_to_pb(ellipse: Ellipse) -> geometry_pb2.EllipseData:
         The protobuf message representing the Ellipse.
     """
     proto_data = geometry_pb2.EllipseData()
-    proto_data.guid = str(ellipse.guid)
-    proto_data.name = ellipse.name
+    if ellipse._guid is not None:
+        proto_data.guid = str(ellipse._guid)
+    if ellipse._name is not None:
+        proto_data.name = ellipse.name
     proto_data.major = ellipse.major
     proto_data.minor = ellipse.minor
 
@@ -866,8 +1028,9 @@ def ellipse_from_pb(proto_data: geometry_pb2.EllipseData) -> Ellipse:
         The deserialized COMPAS Ellipse object.
     """
     frame = frame_from_pb(proto_data.frame)
-    result = Ellipse(major=proto_data.major, minor=proto_data.minor, frame=frame, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Ellipse(major=proto_data.major, minor=proto_data.minor, frame=frame, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -892,12 +1055,12 @@ def polyline_to_pb(polyline: Polyline) -> geometry_pb2.PolylineData:
         The protobuf message representing the Polyline.
     """
     proto_data = geometry_pb2.PolylineData()
-    proto_data.guid = str(polyline.guid)
-    proto_data.name = polyline.name
+    if polyline._guid is not None:
+        proto_data.guid = str(polyline._guid)
+    if polyline._name is not None:
+        proto_data.name = polyline.name
 
-    for point in polyline.points:
-        proto_point = point_to_pb(point)
-        proto_data.points.append(proto_point)
+    _extend_flat_points(proto_data.points, polyline.points)
 
     return proto_data
 
@@ -917,9 +1080,10 @@ def polyline_from_pb(proto_data: geometry_pb2.PolylineData) -> Polyline:
     Polyline
         The deserialized COMPAS Polyline object.
     """
-    points = [point_from_pb(proto_point) for proto_point in proto_data.points]
-    result = Polyline(points=points, name=proto_data.name)
-    result._guid = proto_data.guid
+    points = _flat_points_to_lists(proto_data.points)
+    result = Polyline(points=points, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -944,12 +1108,12 @@ def pointcloud_to_pb(pointcloud: Pointcloud) -> geometry_pb2.PointcloudData:
         The protobuf message representing the Pointcloud.
     """
     proto_data = geometry_pb2.PointcloudData()
-    proto_data.guid = str(pointcloud.guid)
-    proto_data.name = pointcloud.name
+    if pointcloud._guid is not None:
+        proto_data.guid = str(pointcloud._guid)
+    if pointcloud._name is not None:
+        proto_data.name = pointcloud.name
 
-    for point in pointcloud.points:
-        proto_point = point_to_pb(point)
-        proto_data.points.append(proto_point)
+    _extend_flat_points(proto_data.points, pointcloud.points)
 
     return proto_data
 
@@ -969,9 +1133,10 @@ def pointcloud_from_pb(proto_data: geometry_pb2.PointcloudData) -> Pointcloud:
     Pointcloud
         The deserialized COMPAS Pointcloud object.
     """
-    points = [point_from_pb(proto_point) for proto_point in proto_data.points]
-    result = Pointcloud(points=points, name=proto_data.name)
-    result._guid = proto_data.guid
+    points = _flat_points_to_lists(proto_data.points)
+    result = Pointcloud(points=points, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -996,8 +1161,10 @@ def transformation_to_pb(transformation: Transformation) -> geometry_pb2.Transfo
         The protobuf message representing the Transformation.
     """
     proto_data = geometry_pb2.TransformationData()
-    proto_data.guid = str(transformation.guid)
-    proto_data.name = transformation.name
+    if transformation._guid is not None:
+        proto_data.guid = str(transformation._guid)
+    if transformation._name is not None:
+        proto_data.name = transformation.name
 
     # Flatten 4x4 matrix to list of 16 floats
     matrix = transformation.matrix
@@ -1034,7 +1201,8 @@ def transformation_from_pb(proto_data: geometry_pb2.TransformationData) -> Trans
 
     result = Transformation.from_matrix(matrix)
     result.name = proto_data.name
-    result._guid = proto_data.guid
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1059,8 +1227,10 @@ def translation_to_pb(translation: Translation) -> geometry_pb2.TranslationData:
         The protobuf message representing the Translation.
     """
     proto_data = geometry_pb2.TranslationData()
-    proto_data.guid = str(translation.guid)
-    proto_data.name = translation.name
+    if translation._guid is not None:
+        proto_data.guid = str(translation._guid)
+    if translation._name is not None:
+        proto_data.name = translation.name
 
     vector = vector_to_pb(translation.translation_vector)
     proto_data.translation_vector.CopyFrom(vector)
@@ -1086,7 +1256,8 @@ def translation_from_pb(proto_data: geometry_pb2.TranslationData) -> Translation
     vector = vector_from_pb(proto_data.translation_vector)
     result = Translation.from_vector(vector)
     result.name = proto_data.name
-    result._guid = proto_data.guid
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1111,24 +1282,16 @@ def rotation_to_pb(rotation: Rotation) -> geometry_pb2.RotationData:
         The protobuf message representing the Rotation.
     """
     proto_data = geometry_pb2.RotationData()
-    proto_data.guid = str(rotation.guid)
-    proto_data.name = rotation.name
+    if rotation._guid is not None:
+        proto_data.guid = str(rotation._guid)
+    if rotation._name is not None:
+        proto_data.name = rotation.name
 
-    # Get axis and angle from the rotation
-    axis_angle = rotation.axis_and_angle
-    axis = axis_angle[0]
-    angle = axis_angle[1]
-
-    proto_axis = vector_to_pb(axis)
-    proto_data.axis.CopyFrom(proto_axis)
-    proto_data.angle = angle
-
-    # Use origin as the default point of rotation
-    from compas.geometry import Point
-
-    point = Point(0, 0, 0)
-    proto_point = point_to_pb(point)
-    proto_data.point.CopyFrom(proto_point)
+    # Store the 4x4 matrix directly (flattened) for an exact round-trip. Encoding axis+angle
+    # instead would recompute the matrix on load and lose ~1e-16.
+    for row in rotation.matrix:
+        for value in row:
+            proto_data.matrix.append(value)
 
     return proto_data
 
@@ -1148,12 +1311,14 @@ def rotation_from_pb(proto_data: geometry_pb2.RotationData) -> Rotation:
     Rotation
         The deserialized COMPAS Rotation object.
     """
-    axis = vector_from_pb(proto_data.axis)
-    angle = proto_data.angle
+    matrix_flat = list(proto_data.matrix)
+    matrix = [matrix_flat[i * 4 : i * 4 + 4] for i in range(4)]
 
-    result = Rotation.from_axis_and_angle(axis, angle)
-    result.name = proto_data.name
-    result._guid = proto_data.guid
+    result = Rotation.from_matrix(matrix)
+    if proto_data.name:
+        result.name = proto_data.name
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1178,8 +1343,10 @@ def capsule_to_pb(capsule: Capsule) -> geometry_pb2.CapsuleData:
         The protobuf message representing the Capsule.
     """
     proto_data = geometry_pb2.CapsuleData()
-    proto_data.guid = str(capsule.guid)
-    proto_data.name = capsule.name
+    if capsule._guid is not None:
+        proto_data.guid = str(capsule._guid)
+    if capsule._name is not None:
+        proto_data.name = capsule.name
     proto_data.radius = capsule.radius
     proto_data.height = capsule.height
 
@@ -1205,8 +1372,9 @@ def capsule_from_pb(proto_data: geometry_pb2.CapsuleData) -> Capsule:
         The deserialized COMPAS Capsule object.
     """
     frame = frame_from_pb(proto_data.frame)
-    result = Capsule(radius=proto_data.radius, height=proto_data.height, frame=frame, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Capsule(radius=proto_data.radius, height=proto_data.height, frame=frame, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1231,8 +1399,10 @@ def quaternion_to_pb(quaternion: Quaternion) -> geometry_pb2.QuaternionData:
         The protobuf message representing the Quaternion.
     """
     proto_data = geometry_pb2.QuaternionData()
-    proto_data.guid = str(quaternion.guid)
-    proto_data.name = quaternion.name
+    if quaternion._guid is not None:
+        proto_data.guid = str(quaternion._guid)
+    if quaternion._name is not None:
+        proto_data.name = quaternion.name
     proto_data.w = quaternion.w
     proto_data.x = quaternion.x
     proto_data.y = quaternion.y
@@ -1256,8 +1426,9 @@ def quaternion_from_pb(proto_data: geometry_pb2.QuaternionData) -> Quaternion:
     Quaternion
         The deserialized COMPAS Quaternion object.
     """
-    result = Quaternion(w=proto_data.w, x=proto_data.x, y=proto_data.y, z=proto_data.z, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Quaternion(w=proto_data.w, x=proto_data.x, y=proto_data.y, z=proto_data.z, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1282,8 +1453,10 @@ def scale_to_pb(scale: Scale) -> geometry_pb2.ScaleData:
         The protobuf message representing the Scale.
     """
     proto_data = geometry_pb2.ScaleData()
-    proto_data.guid = str(scale.guid)
-    proto_data.name = scale.name
+    if scale._guid is not None:
+        proto_data.guid = str(scale._guid)
+    if scale._name is not None:
+        proto_data.name = scale.name
 
     # Flatten 4x4 matrix to list of 16 floats
     matrix = scale.matrix
@@ -1320,7 +1493,8 @@ def scale_from_pb(proto_data: geometry_pb2.ScaleData) -> Scale:
 
     result = Scale.from_matrix(matrix)
     result.name = proto_data.name
-    result._guid = proto_data.guid
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1345,8 +1519,10 @@ def reflection_to_pb(reflection: Reflection) -> geometry_pb2.ReflectionData:
         The protobuf message representing the Reflection.
     """
     proto_data = geometry_pb2.ReflectionData()
-    proto_data.guid = str(reflection.guid)
-    proto_data.name = reflection.name
+    if reflection._guid is not None:
+        proto_data.guid = str(reflection._guid)
+    if reflection._name is not None:
+        proto_data.name = reflection.name
 
     # Flatten 4x4 matrix to list of 16 floats
     matrix = reflection.matrix
@@ -1383,7 +1559,8 @@ def reflection_from_pb(proto_data: geometry_pb2.ReflectionData) -> Reflection:
 
     result = Reflection.from_matrix(matrix)
     result.name = proto_data.name
-    result._guid = proto_data.guid
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1408,8 +1585,10 @@ def shear_to_pb(shear: Shear) -> geometry_pb2.ShearData:
         The protobuf message representing the Shear.
     """
     proto_data = geometry_pb2.ShearData()
-    proto_data.guid = str(shear.guid)
-    proto_data.name = shear.name
+    if shear._guid is not None:
+        proto_data.guid = str(shear._guid)
+    if shear._name is not None:
+        proto_data.name = shear.name
 
     # Flatten 4x4 matrix to list of 16 floats
     matrix = shear.matrix
@@ -1446,7 +1625,8 @@ def shear_from_pb(proto_data: geometry_pb2.ShearData) -> Shear:
 
     result = Shear.from_matrix(matrix)
     result.name = proto_data.name
-    result._guid = proto_data.guid
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1471,8 +1651,10 @@ def projection_to_pb(projection: Projection) -> geometry_pb2.ProjectionData:
         The protobuf message representing the Projection.
     """
     proto_data = geometry_pb2.ProjectionData()
-    proto_data.guid = str(projection.guid)
-    proto_data.name = projection.name
+    if projection._guid is not None:
+        proto_data.guid = str(projection._guid)
+    if projection._name is not None:
+        proto_data.name = projection.name
 
     # Flatten 4x4 matrix to list of 16 floats
     matrix = projection.matrix
@@ -1509,7 +1691,8 @@ def projection_from_pb(proto_data: geometry_pb2.ProjectionData) -> Projection:
 
     result = Projection.from_matrix(matrix)
     result.name = proto_data.name
-    result._guid = proto_data.guid
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1534,13 +1717,13 @@ def bezier_to_pb(bezier: Bezier) -> geometry_pb2.BezierData:
         The protobuf message representing the Bezier.
     """
     proto_data = geometry_pb2.BezierData()
-    proto_data.guid = str(bezier.guid)
-    proto_data.name = bezier.name
+    if bezier._guid is not None:
+        proto_data.guid = str(bezier._guid)
+    if bezier._name is not None:
+        proto_data.name = bezier.name
     proto_data.degree = bezier.degree
 
-    for point in bezier.points:
-        proto_point = point_to_pb(point)
-        proto_data.points.append(proto_point)
+    _extend_flat_points(proto_data.points, bezier.points)
 
     return proto_data
 
@@ -1560,9 +1743,10 @@ def bezier_from_pb(proto_data: geometry_pb2.BezierData) -> Bezier:
     Bezier
         The deserialized COMPAS Bezier object.
     """
-    points = [point_from_pb(proto_point) for proto_point in proto_data.points]
-    result = Bezier(points=points, name=proto_data.name)
-    result._guid = proto_data.guid
+    points = _flat_points_to_lists(proto_data.points)
+    result = Bezier(points=points, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1587,8 +1771,10 @@ def hyperbola_to_pb(hyperbola: Hyperbola) -> geometry_pb2.HyperbolaData:
         The protobuf message representing the Hyperbola.
     """
     proto_data = geometry_pb2.HyperbolaData()
-    proto_data.guid = str(hyperbola.guid)
-    proto_data.name = hyperbola.name
+    if hyperbola._guid is not None:
+        proto_data.guid = str(hyperbola._guid)
+    if hyperbola._name is not None:
+        proto_data.name = hyperbola.name
     proto_data.major = hyperbola.major
     proto_data.minor = hyperbola.minor
 
@@ -1614,8 +1800,9 @@ def hyperbola_from_pb(proto_data: geometry_pb2.HyperbolaData) -> Hyperbola:
         The deserialized COMPAS Hyperbola object.
     """
     frame = frame_from_pb(proto_data.frame)
-    result = Hyperbola(major=proto_data.major, minor=proto_data.minor, frame=frame, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Hyperbola(major=proto_data.major, minor=proto_data.minor, frame=frame, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1640,8 +1827,10 @@ def parabola_to_pb(parabola: Parabola) -> geometry_pb2.ParabolaData:
         The protobuf message representing the Parabola.
     """
     proto_data = geometry_pb2.ParabolaData()
-    proto_data.guid = str(parabola.guid)
-    proto_data.name = parabola.name
+    if parabola._guid is not None:
+        proto_data.guid = str(parabola._guid)
+    if parabola._name is not None:
+        proto_data.name = parabola.name
     proto_data.focal = parabola.focal
 
     frame = frame_to_pb(parabola.frame)
@@ -1666,8 +1855,9 @@ def parabola_from_pb(proto_data: geometry_pb2.ParabolaData) -> Parabola:
         The deserialized COMPAS Parabola object.
     """
     frame = frame_from_pb(proto_data.frame)
-    result = Parabola(focal=proto_data.focal, frame=frame, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Parabola(focal=proto_data.focal, frame=frame, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1692,13 +1882,13 @@ def polyhedron_to_pb(polyhedron: Polyhedron) -> datastructures_pb2.PolyhedronDat
         The protobuf message representing the Polyhedron.
     """
     proto_data = datastructures_pb2.PolyhedronData()
-    proto_data.guid = str(polyhedron.guid)
-    proto_data.name = polyhedron.name
+    if polyhedron._guid is not None:
+        proto_data.guid = str(polyhedron._guid)
+    if polyhedron._name is not None:
+        proto_data.name = polyhedron.name
 
-    # Add vertices
-    for vertex in polyhedron.vertices:
-        proto_vertex = point_to_pb(vertex)
-        proto_data.vertices.append(proto_vertex)
+    # Add vertices as a flat coordinate array (3 doubles per vertex)
+    _extend_flat_points(proto_data.vertices, polyhedron.vertices)
 
     # Add faces
     for face in polyhedron.faces:
@@ -1725,14 +1915,15 @@ def polyhedron_from_pb(proto_data: datastructures_pb2.PolyhedronData) -> Polyhed
     Polyhedron
         The deserialized COMPAS Polyhedron object.
     """
-    vertices = [point_from_pb(proto_vertex) for proto_vertex in proto_data.vertices]
+    vertices = _flat_points_to_lists(proto_data.vertices)
     faces = []
     for proto_face in proto_data.faces:
         face = list(proto_face.vertex_indices)
         faces.append(face)
 
-    result = Polyhedron(vertices=vertices, faces=faces, name=proto_data.name)
-    result._guid = proto_data.guid
+    result = Polyhedron(vertices=vertices, faces=faces, name=(proto_data.name or None))
+    if proto_data.guid:
+        result._guid = UUID(proto_data.guid)
     return result
 
 
@@ -1757,17 +1948,29 @@ def graph_to_pb(graph: Graph) -> datastructures_pb2.GraphData:
         The protobuf message representing the Graph.
     """
     proto_data = datastructures_pb2.GraphData()
-    proto_data.guid = str(graph.guid)
-    proto_data.name = graph.name or "Graph"
+    if graph._guid is not None:
+        proto_data.guid = str(graph._guid)
+    if graph._name is not None:
+        proto_data.name = graph.name or "Graph"
 
-    nodes = {repr(key): attr for key, attr in graph.node.items()}
-    edges = {repr(u): {repr(v): attr for v, attr in nbrs.items()} for u, nbrs in graph.edge.items()}
+    # Nodes: keys stored once, attributes (incl. x/y/z) stored column-wise.
+    node_keys = list(graph.nodes())
+    node_index = {key: i for i, key in enumerate(node_keys)}
+    for key in node_keys:
+        proto_data.node_keys.append(_serializer_any(key))
+    _fill_attribute_columns(proto_data.node_attributes, [graph.node[k] for k in node_keys])
 
-    proto_data.nodes.CopyFrom(_serialize_dict(nodes))
-    proto_data.edges.CopyFrom(_serialize_dict(edges))
-    proto_data.attributes.CopyFrom(_serialize_dict(graph.attributes))
-    proto_data.default_node_attributes.CopyFrom(_serialize_dict(graph.default_node_attributes))
-    proto_data.default_edge_attributes.CopyFrom(_serialize_dict(graph.default_edge_attributes))
+    # Edges: index pairs into node_keys + columnar edge attributes.
+    edge_attrs = []
+    for u, v in graph.edges():
+        proto_data.edge_u.append(node_index[u])
+        proto_data.edge_v.append(node_index[v])
+        edge_attrs.append(graph.edge[u][v])
+    _fill_attribute_columns(proto_data.edge_attributes, edge_attrs)
+
+    _fill_attr_map(proto_data.attributes, graph.attributes)
+    _fill_attr_map(proto_data.default_node_attributes, graph.default_node_attributes)
+    _fill_attr_map(proto_data.default_edge_attributes, graph.default_edge_attributes)
 
     return proto_data
 
@@ -1788,17 +1991,24 @@ def graph_from_pb(proto_data: datastructures_pb2.GraphData) -> Graph:
         The deserialized COMPAS Graph object.
     """
     graph = Graph(
-        default_node_attributes=_deserialize_dict(proto_data.default_node_attributes),
-        default_edge_attributes=_deserialize_dict(proto_data.default_edge_attributes),
-        name=proto_data.name,
+        default_node_attributes=_read_attr_map(proto_data.default_node_attributes),
+        default_edge_attributes=_read_attr_map(proto_data.default_edge_attributes),
+        name=(proto_data.name or None),
     )
-    graph.attributes.update(_deserialize_dict(proto_data.attributes))
+    graph.attributes.update(_read_attr_map(proto_data.attributes))
 
-    for node_key, attr in _deserialize_dict(proto_data.nodes).items():
-        graph.add_node(key=literal_eval(node_key), attr_dict=attr)
-    for u, nbrs in _deserialize_dict(proto_data.edges).items():
-        for v, attr in nbrs.items():
-            graph.add_edge(literal_eval(u), literal_eval(v), attr_dict=attr)
+    node_keys = [_deserialize_any(k) for k in proto_data.node_keys]
+    for key in node_keys:
+        graph.add_node(key=key)
+    _read_attribute_columns(proto_data.node_attributes, node_keys, graph.node)
 
-    graph._guid = UUID(proto_data.guid)
+    edge_dicts = []
+    for ui, vi in zip(proto_data.edge_u, proto_data.edge_v):
+        u, v = node_keys[ui], node_keys[vi]
+        graph.add_edge(u, v)
+        edge_dicts.append(graph.edge[u][v])
+    _read_attribute_columns(proto_data.edge_attributes, list(range(len(edge_dicts))), edge_dicts)
+
+    if proto_data.guid:
+        graph._guid = UUID(proto_data.guid)
     return graph
