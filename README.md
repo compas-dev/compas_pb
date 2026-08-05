@@ -8,6 +8,7 @@
     <a href="https://github.com/gramaziokohler/compas_pb/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License MIT"></a>
     <a href="https://github.com/gramaziokohler/compas_pb/actions"><img src="https://github.com/gramaziokohler/compas_pb/actions/workflows/build.yml/badge.svg" alt="Build Status"></a>
     <a href="https://gramaziokohler.github.io/compas_pb"><img src="https://img.shields.io/badge/docs-latest-brightgreen.svg" alt="Documentation"></a>
+    <a href="https://compas.dev/mission-control/#compas_pb"><img src="https://compas.dev/badge.svg" alt="Made with COMPAS"></a>
 </p>
 
 A COMPAS extension which lets you serialize and deserialize COMPAS `Data` types using protobuf.
