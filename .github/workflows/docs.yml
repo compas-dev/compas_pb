@@ -1,8 +1,12 @@
 name: docs
 
+# Called by the release workflow after a successful publish, and dispatchable by hand.
+# This deliberately does not listen for `release: published`: the release is created by
+# release.yml using GITHUB_TOKEN, and events raised with that token never start new
+# workflow runs, so that trigger can never fire.
 on:
-  release:
-    types: [published]
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: write
