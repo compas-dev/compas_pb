@@ -106,6 +106,9 @@ def any_to_pb(obj: Union[compas.data.Data, int, float, bool, str, bytes]) -> mes
         :class: `compas_pb.generated.message_pb2.AnyData`
             The protobuf message type of AnyData.
     """
+    if not SerializerRegistry._SERIALIZERS or not SerializerRegistry._DESERIALIZERS:
+        _ensure_serializers()
+
     proto_data = message_pb2.AnyData()
 
     try:
