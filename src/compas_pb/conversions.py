@@ -93,7 +93,7 @@ def _fill_attribute_columns(dest, ordered_attrs, exclude=()):
     """
     count = len(ordered_attrs)
     # Two parallel lists per column; elements are visited in order, so each column's index
-    # list comes out ascending — no sort needed.
+    # list comes out ascending, ie. no sort needed
     col_indices = {}  # name -> [index, ...]
     col_values = {}  # name -> [value, ...]
     for idx, attr in enumerate(ordered_attrs):
@@ -401,15 +401,22 @@ def mesh_to_pb(mesh: Mesh) -> datastructures_pb2.MeshData:
         proto_data.name = mesh.name or "Mesh"
 
     # Vertices as a flat coordinate array (3 doubles per vertex) instead of a message per vertex.
-    # Read x/y/z straight from the vertex attribute dict (always set by add_vertex) and fill the
-    # packed field in one extend, avoiding a vertex_coordinates() call and a proto call per vertex.
+    # Read x/y/z straight from the vertex attribute dicts and fill the packed field in one extend,
+    # avoiding a vertex_coordinates() call and a proto call per vertex. add_vertex only stores the
+    # keys it was passed, so a vertex may rely on the class defaults for any of x/y/z; those are
+    # hoisted out of the loop here because this array is the geometry and must hold the effective
+    # coordinates (unlike the attribute columns, which travel alongside the defaults themselves).
+    vertex_defaults = mesh.default_vertex_attributes
+    default_x = vertex_defaults.get("x", 0.0)
+    default_y = vertex_defaults.get("y", 0.0)
+    default_z = vertex_defaults.get("z", 0.0)
     index_map = {}  # vertex_key → index
     vertex_keys = []
     coords = []
     for index, (key, attr) in enumerate(mesh.vertex.items()):
-        coords.append(attr["x"])
-        coords.append(attr["y"])
-        coords.append(attr["z"])
+        coords.append(attr.get("x", default_x))
+        coords.append(attr.get("y", default_y))
+        coords.append(attr.get("z", default_z))
         index_map[key] = index
         vertex_keys.append(key)
     proto_data.vertices.extend(coords)
