@@ -24,3 +24,15 @@ def test_graph_serialization():
 
     # check edge attr
     assert g_restored.edge_attribute((0, 1), "weight") == 5.5
+
+
+def test_graph_serialization_with_string_keys():
+    g = Graph()
+    g.add_node(key="start", x=0.0)
+    g.add_node(key="end", x=1.0)
+    g.add_edge("start", "end")
+
+    restored = compas_pb.pb_load_bts(compas_pb.pb_dump_bts(g))
+
+    assert list(restored.nodes()) == ["start", "end"]
+    assert list(restored.edges()) == [("start", "end")]
