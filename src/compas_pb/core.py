@@ -407,10 +407,7 @@ def _check_version_compatibility(any_data: message_pb2.MessageData) -> None:
     """
     incoming = any_data.version or ""
     if not incoming:
-        raise ValueError(
-            "No version tag in the message; cannot verify compas_pb wire-format compatibility "
-            "(reader is {}).".format(_CURRENT_VERSION)
-        )
+        raise ValueError("No version tag in the message; cannot verify compas_pb wire-format compatibility (reader is {}).".format(_CURRENT_VERSION))
     if _wire_compat_key(incoming) != _wire_compat_key(_CURRENT_VERSION):
         raise ValueError(
             "Incompatible compas_pb wire format: message was written by version {} but this "
