@@ -67,6 +67,9 @@ docs = [
     "tomli >=2.0; python_version < '3.11'",
 ]
 
+[project.scripts]
+compas_pb = "compas_pb.cli:main"
+
 [project.urls]
 Homepage = "https://gramaziokohler.github.io/compas_pb"
 Documentation = "https://gramaziokohler.github.io/compas_pb"
@@ -109,6 +112,9 @@ addopts = [
     "--doctest-glob=*.rst",
     "--tb=short",
     "--import-mode=importlib",
+]
+markers = [
+    "network: needs network access to fetch an older compas_pb into an ephemeral environment",
 ]
 doctest_optionflags = [
     "NORMALIZE_WHITESPACE",

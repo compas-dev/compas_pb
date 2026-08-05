@@ -139,6 +139,7 @@ nav:
       - Installation: installation.md
       - Examples: examples.md
       - Missing COMPAS Type?: missing_compas_type.md
+      - Migrating Older Data: migration.md
   - API Reference:
       - compas_pb: reference/compas_pb.md
       - compas_pb.core: reference/compas_pb.core.md

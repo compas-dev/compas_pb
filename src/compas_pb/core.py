@@ -411,6 +411,7 @@ def _check_version_compatibility(any_data: message_pb2.MessageData) -> None:
     if _wire_compat_key(incoming) != _wire_compat_key(_CURRENT_VERSION):
         raise ValueError(
             "Incompatible compas_pb wire format: message was written by version {} but this "
-            "reader is {}. The binary schema differs between these versions; re-serialize the "
-            "source or read it with a matching compas_pb version.".format(incoming, _CURRENT_VERSION)
+            "reader is {}. The binary schema differs between these versions; migrate the data "
+            "with `compas_pb migrate <file> -o <file>` or read it with a matching compas_pb "
+            "version.".format(incoming, _CURRENT_VERSION)
         )
