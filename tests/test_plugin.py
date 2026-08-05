@@ -10,6 +10,10 @@ from compas_pb import pb_load
 
 @pytest.fixture
 def frame_data_path():
+    # Golden file written by a previous run, so this exercises reading bytes we did not just
+    # produce in-process. The wire-version check is a hard gate, so it has to be regenerated
+    # whenever the compatibility key changes (every minor under 0.x, every major from 1.0 on):
+    #   python -c "from compas.geometry import Frame; from compas_pb import pb_dump; pb_dump(Frame.worldXY(), 'tests/test_data/frame.data')"
     return "tests/test_data/frame.data"
 
 
