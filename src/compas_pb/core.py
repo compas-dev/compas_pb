@@ -138,6 +138,9 @@ def any_from_pb(proto_data: message_pb2.AnyData) -> Union[compas.data.Data, int,
     Union[compas.data.Data, list, dict, int, float, bool, str]
         The converted object. Can be a COMPAS Data object, list, dict, or primitive type.
     """
+    if not SerializerRegistry._SERIALIZERS or not SerializerRegistry._DESERIALIZERS:
+        _ensure_serializers()
+
     union_field = proto_data.WhichOneof("data")
     if union_field == "value":
         return primitive_from_pb(proto_data)
