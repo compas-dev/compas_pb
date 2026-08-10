@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added a `compas_pb migrate` command that re-encodes data written by an older, wire-incompatible version into the current format. It decodes the blob in an ephemeral `uv` environment holding the version that wrote it, bridges through COMPAS JSON, and re-encodes with the current build. Reads from a file or stdin, writes to a file or stdout, and `--inspect` reports which version wrote a blob without migrating it.
+* Added `compas_pb.cli.migrate_bytes` and `compas_pb.cli.detect_wire_version` for the same migration from Python.
+* Added a migration guide at `docs/migration.md`.
+
 ### Changed
+
+* Changed the incompatible-wire-format error to point at `compas_pb migrate` instead of only telling the user to re-serialize the source.
 
 ### Removed
 
