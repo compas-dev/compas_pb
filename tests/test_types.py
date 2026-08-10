@@ -24,6 +24,19 @@ def test_auto_guid_is_not_serialized():
     assert [new_point.x, new_point.y, new_point.z] == [point.x, point.y, point.z]
 
 
+def test_circle_dump_does_not_generate_a_guid():
+    from compas.geometry import Circle
+
+    circle = Circle(radius=2.0)
+    assert circle._guid is None
+
+    new_circle = pb_load_bts(pb_dump_bts(circle))
+
+    assert circle._guid is None
+    assert new_circle._guid is None
+    assert new_circle.__data__ == circle.__data__
+
+
 def test_serialize_frame():
     from compas.geometry import Frame
 
