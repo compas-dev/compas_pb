@@ -81,8 +81,8 @@ loaded_data = pb_load_bts(pb_data)
 ## Documentation
 
 For further "getting started" instructions, a tutorial, examples, and an API reference,
-please check out the online documentation here: [compas_pb docs](https://gramaziokohler.github.io/compas_pb)
+please check out the online documentation here: [compas_pb docs](https://compas.dev/compas_pb)
 
 ## Issue Tracker
 
-If you find a bug or if you have a problem with running the code, please file an issue on the [Issue Tracker](https://github.com/gramaziokohler/compas_pb/issues).
+If you find a bug or if you have a problem with running the code, please file an issue on the [Issue Tracker](https://github.com/compas-dev/compas_pb/issues).
