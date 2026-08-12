@@ -71,11 +71,11 @@ docs = [
 compas_pb = "compas_pb.cli:main"
 
 [project.urls]
-Homepage = "https://gramaziokohler.github.io/compas_pb"
-Documentation = "https://gramaziokohler.github.io/compas_pb"
-Repository = "https://github.com/gramaziokohler/compas_pb"
-Changelog = "https://github.com/gramaziokohler/compas_pb/blob/main/CHANGELOG.md"
-Issues = "https://github.com/gramaziokohler/compas_pb/issues"
+Homepage = "https://compas.dev/compas_pb"
+Documentation = "https://compas.dev/compas_pb"
+Repository = "https://github.com/compas-dev/compas_pb"
+Changelog = "https://github.com/compas-dev/compas_pb/blob/main/CHANGELOG.md"
+Issues = "https://github.com/compas-dev/compas_pb/issues"
 Forum = "https://forum.compas-framework.org/"
 
 # ============================================================================
