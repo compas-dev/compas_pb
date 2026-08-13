@@ -24,10 +24,11 @@ jobs:
   publish:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
-      - uses: compas-dev/compas-actions.publish@v3
+      - uses: compas-dev/compas-actions.publish@add-trusted-publishing
         with:
-          pypi_token: ${{ secrets.PYPI }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
   upload-assets:
