@@ -17,7 +17,7 @@ jobs:
       version: ${{ steps.release.outputs.version }}
       tag: ${{ steps.release.outputs.tag }}
     steps:
-      - uses: compas-dev/compas-actions/release-check@main
+      - uses: compas-dev/compas-actions/release-check@v1
         id: release
 
   build:
@@ -30,7 +30,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python: ["3.11", "3.12", "3.13"]
     steps:
-      - uses: compas-dev/compas-actions/ci@main
+      - uses: compas-dev/compas-actions/ci@v1
         with:
           python-version: ${{ matrix.python }}
           management-tool: uv
@@ -41,7 +41,7 @@ jobs:
     if: needs.release.outputs.is-release == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: compas-dev/compas-actions/prepare-release@main
+      - uses: compas-dev/compas-actions/prepare-release@v1
         with:
           python-version: "3.12"
           management-tool: uv
@@ -72,7 +72,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: compas-dev/compas-actions/github-release@main
+      - uses: compas-dev/compas-actions/github-release@v1
         with:
           github-token: ${{ github.token }}
           tag-name: ${{ needs.release.outputs.tag }}
@@ -86,7 +86,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: compas-dev/compas-actions/docs@main
+      - uses: compas-dev/compas-actions/docs@v1
         with:
           deploy: true
           version: ${{ needs.release.outputs.version }}

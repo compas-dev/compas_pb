@@ -18,7 +18,7 @@ jobs:
     outputs:
       is-release: ${{ steps.release.outputs.is-release }}
     steps:
-      - uses: compas-dev/compas-actions/release-check@main
+      - uses: compas-dev/compas-actions/release-check@v1
         id: release
 
   build:
@@ -34,7 +34,7 @@ jobs:
           - os: macos-latest
             python: "3.9"
     steps:
-      - uses: compas-dev/compas-actions/ci@main
+      - uses: compas-dev/compas-actions/ci@v1
         with:
           python-version: ${{ matrix.python }}
           management-tool: uv
@@ -48,7 +48,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: compas-dev/compas-actions/setup-python@main
+      - uses: compas-dev/compas-actions/setup-python@v1
         with:
           python-version: "3.12"
           management-tool: uv

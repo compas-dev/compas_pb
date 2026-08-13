@@ -15,13 +15,13 @@ jobs:
     name: Validate release metadata
     runs-on: ubuntu-latest
     steps:
-      - uses: compas-dev/compas-actions/release-check@main
+      - uses: compas-dev/compas-actions/release-check@v1
 
   changelog:
     name: Check changelog
     runs-on: ubuntu-latest
     steps:
-      - uses: compas-dev/compas-actions/pr-checks@main
+      - uses: compas-dev/compas-actions/pr-checks@v1
         with:
           changelog-path: CHANGELOG.md
           skip-label: no changelog
