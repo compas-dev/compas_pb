@@ -1,0 +1,4182 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://compas.dev/compas_pb/1.1.4/protobuf/">
+      
+      
+        <link rel="prev" href="../reference/compas_pb.conversions/">
+      
+      
+        <link rel="next" href="../changelog/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../public/favicon.ico">
+      <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Protobuf Definitions - COMPAS Protobuf</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../assets/css/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#protocol-documentation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="https://compas.dev/compas_pb/" title="COMPAS Protobuf" class="md-header__button md-logo" aria-label="COMPAS Protobuf" data-md-component="logo">
+      
+  <img src="../assets/images/compas_logo_white_transparent.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            COMPAS Protobuf
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Protobuf Definitions
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/compas-dev/compas_pb/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    compas-dev/compas_pb
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://compas.dev/compas_pb/" title="COMPAS Protobuf" class="md-nav__button md-logo" aria-label="COMPAS Protobuf" data-md-component="logo">
+      
+  <img src="../assets/images/compas_logo_white_transparent.png" alt="logo">
+
+    </a>
+    COMPAS Protobuf
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/compas-dev/compas_pb/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    compas-dev/compas_pb
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Get Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Get Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../missing_compas_type/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Missing COMPAS Type?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrating Older Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/compas_pb/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compas_pb
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/compas_pb.core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compas_pb.core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/compas_pb.registry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compas_pb.registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/compas_pb.conversions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compas_pb.conversions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protobuf Definitions
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protobuf Definitions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compas_pbgenerateddatastructuresproto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compas_pb/generated/datastructures.proto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="compas_pb/generated/datastructures.proto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributecolumn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AttributeColumn
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#facedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FaceData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graphdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GraphData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graphdataattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GraphData.AttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graphdatadefaultedgeattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GraphData.DefaultEdgeAttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graphdatadefaultnodeattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GraphData.DefaultNodeAttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meshdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MeshData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meshdataattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MeshData.AttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meshdatadefaultedgeattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MeshData.DefaultEdgeAttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meshdatadefaultfaceattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MeshData.DefaultFaceAttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meshdatadefaultvertexattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MeshData.DefaultVertexAttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#polyhedrondata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PolyhedronData
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compas_pbgeneratedgeometryproto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compas_pb/generated/geometry.proto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="compas_pb/generated/geometry.proto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#arcdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ArcData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bezierdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BezierData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#boxdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BoxData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capsuledata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CapsuleData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circledata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CircleData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConeData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cylinderdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CylinderData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ellipsedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EllipseData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#framedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FrameData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperboladata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HyperbolaData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LineData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paraboladata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ParabolaData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PlaneData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pointdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PointData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pointclouddata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PointcloudData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#polygondata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PolygonData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#polylinedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PolylineData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#projectiondata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProjectionData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quaterniondata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QuaternionData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reflectiondata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ReflectionData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rotationdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RotationData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scaledata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ScaleData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sheardata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ShearData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spheredata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SphereData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#torusdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TorusData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformationdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TransformationData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#translationdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TranslationData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vectordata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VectorData
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compas_pbgeneratedmessageproto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compas_pb/generated/message.proto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="compas_pb/generated/message.proto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anydata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AnyData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dictdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DictData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dictdataitemsentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DictData.ItemsEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fallbackdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FallbackData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#listdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ListData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#messagedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MessageData
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scalar-value-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scalar Value Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Other
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Other
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compas_pbgenerateddatastructuresproto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compas_pb/generated/datastructures.proto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="compas_pb/generated/datastructures.proto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributecolumn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AttributeColumn
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#facedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FaceData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graphdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GraphData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graphdataattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GraphData.AttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graphdatadefaultedgeattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GraphData.DefaultEdgeAttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graphdatadefaultnodeattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GraphData.DefaultNodeAttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meshdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MeshData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meshdataattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MeshData.AttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meshdatadefaultedgeattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MeshData.DefaultEdgeAttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meshdatadefaultfaceattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MeshData.DefaultFaceAttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meshdatadefaultvertexattributesentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MeshData.DefaultVertexAttributesEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#polyhedrondata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PolyhedronData
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compas_pbgeneratedgeometryproto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compas_pb/generated/geometry.proto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="compas_pb/generated/geometry.proto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#arcdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ArcData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bezierdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BezierData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#boxdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BoxData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capsuledata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CapsuleData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#circledata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CircleData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConeData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cylinderdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CylinderData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ellipsedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EllipseData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#framedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FrameData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyperboladata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HyperbolaData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LineData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paraboladata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ParabolaData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PlaneData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pointdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PointData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pointclouddata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PointcloudData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#polygondata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PolygonData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#polylinedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PolylineData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#projectiondata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProjectionData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quaterniondata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QuaternionData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reflectiondata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ReflectionData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rotationdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RotationData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scaledata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ScaleData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sheardata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ShearData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spheredata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SphereData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#torusdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TorusData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformationdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TransformationData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#translationdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TranslationData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vectordata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VectorData
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compas_pbgeneratedmessageproto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compas_pb/generated/message.proto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="compas_pb/generated/message.proto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anydata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AnyData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dictdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DictData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dictdataitemsentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DictData.ItemsEntry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fallbackdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FallbackData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#listdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ListData
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#messagedata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MessageData
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scalar-value-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scalar Value Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="protocol-documentation">Protocol Documentation<a class="headerlink" href="#protocol-documentation" title="Permanent link">¤</a></h1>
+<p><a name="top"></a></p>
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">¤</a></h2>
+<ul>
+<li>
+<p><a href="#compas_pb_generated_datastructures-proto">compas_pb/generated/datastructures.proto</a></p>
+<ul>
+<li><a href="#compas_pb-data-AttributeColumn">AttributeColumn</a></li>
+<li><a href="#compas_pb-data-FaceData">FaceData</a></li>
+<li><a href="#compas_pb-data-GraphData">GraphData</a></li>
+<li><a href="#compas_pb-data-GraphData-AttributesEntry">GraphData.AttributesEntry</a></li>
+<li><a href="#compas_pb-data-GraphData-DefaultEdgeAttributesEntry">GraphData.DefaultEdgeAttributesEntry</a></li>
+<li><a href="#compas_pb-data-GraphData-DefaultNodeAttributesEntry">GraphData.DefaultNodeAttributesEntry</a></li>
+<li><a href="#compas_pb-data-MeshData">MeshData</a></li>
+<li><a href="#compas_pb-data-MeshData-AttributesEntry">MeshData.AttributesEntry</a></li>
+<li><a href="#compas_pb-data-MeshData-DefaultEdgeAttributesEntry">MeshData.DefaultEdgeAttributesEntry</a></li>
+<li><a href="#compas_pb-data-MeshData-DefaultFaceAttributesEntry">MeshData.DefaultFaceAttributesEntry</a></li>
+<li><a href="#compas_pb-data-MeshData-DefaultVertexAttributesEntry">MeshData.DefaultVertexAttributesEntry</a></li>
+<li><a href="#compas_pb-data-PolyhedronData">PolyhedronData</a></li>
+</ul>
+</li>
+<li>
+<p><a href="#compas_pb_generated_geometry-proto">compas_pb/generated/geometry.proto</a></p>
+<ul>
+<li><a href="#compas_pb-data-ArcData">ArcData</a></li>
+<li><a href="#compas_pb-data-BezierData">BezierData</a></li>
+<li><a href="#compas_pb-data-BoxData">BoxData</a></li>
+<li><a href="#compas_pb-data-CapsuleData">CapsuleData</a></li>
+<li><a href="#compas_pb-data-CircleData">CircleData</a></li>
+<li><a href="#compas_pb-data-ConeData">ConeData</a></li>
+<li><a href="#compas_pb-data-CylinderData">CylinderData</a></li>
+<li><a href="#compas_pb-data-EllipseData">EllipseData</a></li>
+<li><a href="#compas_pb-data-FrameData">FrameData</a></li>
+<li><a href="#compas_pb-data-HyperbolaData">HyperbolaData</a></li>
+<li><a href="#compas_pb-data-LineData">LineData</a></li>
+<li><a href="#compas_pb-data-ParabolaData">ParabolaData</a></li>
+<li><a href="#compas_pb-data-PlaneData">PlaneData</a></li>
+<li><a href="#compas_pb-data-PointData">PointData</a></li>
+<li><a href="#compas_pb-data-PointcloudData">PointcloudData</a></li>
+<li><a href="#compas_pb-data-PolygonData">PolygonData</a></li>
+<li><a href="#compas_pb-data-PolylineData">PolylineData</a></li>
+<li><a href="#compas_pb-data-ProjectionData">ProjectionData</a></li>
+<li><a href="#compas_pb-data-QuaternionData">QuaternionData</a></li>
+<li><a href="#compas_pb-data-ReflectionData">ReflectionData</a></li>
+<li><a href="#compas_pb-data-RotationData">RotationData</a></li>
+<li><a href="#compas_pb-data-ScaleData">ScaleData</a></li>
+<li><a href="#compas_pb-data-ShearData">ShearData</a></li>
+<li><a href="#compas_pb-data-SphereData">SphereData</a></li>
+<li><a href="#compas_pb-data-TorusData">TorusData</a></li>
+<li><a href="#compas_pb-data-TransformationData">TransformationData</a></li>
+<li><a href="#compas_pb-data-TranslationData">TranslationData</a></li>
+<li><a href="#compas_pb-data-VectorData">VectorData</a></li>
+</ul>
+</li>
+<li>
+<p><a href="#compas_pb_generated_message-proto">compas_pb/generated/message.proto</a></p>
+<ul>
+<li><a href="#compas_pb-data-AnyData">AnyData</a></li>
+<li><a href="#compas_pb-data-DictData">DictData</a></li>
+<li><a href="#compas_pb-data-DictData-ItemsEntry">DictData.ItemsEntry</a></li>
+<li><a href="#compas_pb-data-FallbackData">FallbackData</a></li>
+<li><a href="#compas_pb-data-ListData">ListData</a></li>
+<li><a href="#compas_pb-data-MessageData">MessageData</a></li>
+</ul>
+</li>
+<li>
+<p><a href="#scalar-value-types">Scalar Value Types</a></p>
+</li>
+</ul>
+<p><a name="compas_pb_generated_datastructures-proto"></a></p>
+<p align="right"><a href="#top">Top</a></p>
+
+<h2 id="compas_pbgenerateddatastructuresproto">compas_pb/generated/datastructures.proto<a class="headerlink" href="#compas_pbgenerateddatastructuresproto" title="Permanent link">¤</a></h2>
+<p><a name="compas_pb-data-AttributeColumn"></a></p>
+<h3 id="attributecolumn">AttributeColumn<a class="headerlink" href="#attributecolumn" title="Permanent link">¤</a></h3>
+<p>A single vertex attribute stored column-wise across vertices.
+If <code>indices</code> is empty the column is dense: one value per vertex, in vertex order.
+Otherwise <code>indices[k]</code> is the vertex index carrying the k-th value (sparse).
+Exactly one of the typed arrays / <code>values</code> is populated, selected by <code>kind</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>indices</td>
+<td><a href="#uint32">uint32</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>kind</td>
+<td><a href="#uint32">uint32</a></td>
+<td></td>
+<td>0 = double, 1 = int, 2 = bool, 3 = generic AnyData</td>
+</tr>
+<tr>
+<td>doubles</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>ints</td>
+<td><a href="#sint64">sint64</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>bools</td>
+<td><a href="#bool">bool</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>values</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td>repeated</td>
+<td>mixed / non-numeric columns</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-FaceData"></a></p>
+<h3 id="facedata">FaceData<a class="headerlink" href="#facedata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>vertex_indices</td>
+<td><a href="#int32">int32</a></td>
+<td>repeated</td>
+<td>indices into the vertices array</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-GraphData"></a></p>
+<h3 id="graphdata">GraphData<a class="headerlink" href="#graphdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>node_keys</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td>repeated</td>
+<td>node keys in order (arbitrary hashable)</td>
+</tr>
+<tr>
+<td>node_attributes</td>
+<td><a href="#compas_pb-data-AttributeColumn">AttributeColumn</a></td>
+<td>repeated</td>
+<td>column-wise, including x/y/z coordinates</td>
+</tr>
+<tr>
+<td>attributes</td>
+<td><a href="#compas_pb-data-GraphData-AttributesEntry">GraphData.AttributesEntry</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>default_node_attributes</td>
+<td><a href="#compas_pb-data-GraphData-DefaultNodeAttributesEntry">GraphData.DefaultNodeAttributesEntry</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>default_edge_attributes</td>
+<td><a href="#compas_pb-data-GraphData-DefaultEdgeAttributesEntry">GraphData.DefaultEdgeAttributesEntry</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>edge_u</td>
+<td><a href="#uint32">uint32</a></td>
+<td>repeated</td>
+<td>Edges as index pairs into node_keys, with edge attributes stored column-wise.</td>
+</tr>
+<tr>
+<td>edge_v</td>
+<td><a href="#uint32">uint32</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>edge_attributes</td>
+<td><a href="#compas_pb-data-AttributeColumn">AttributeColumn</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-GraphData-AttributesEntry"></a></p>
+<h3 id="graphdataattributesentry">GraphData.AttributesEntry<a class="headerlink" href="#graphdataattributesentry" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-GraphData-DefaultEdgeAttributesEntry"></a></p>
+<h3 id="graphdatadefaultedgeattributesentry">GraphData.DefaultEdgeAttributesEntry<a class="headerlink" href="#graphdatadefaultedgeattributesentry" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-GraphData-DefaultNodeAttributesEntry"></a></p>
+<h3 id="graphdatadefaultnodeattributesentry">GraphData.DefaultNodeAttributesEntry<a class="headerlink" href="#graphdatadefaultnodeattributesentry" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-MeshData"></a></p>
+<h3 id="meshdata">MeshData<a class="headerlink" href="#meshdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>vertices</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>flat coordinate array: 3 doubles (x, y, z) per vertex</td>
+</tr>
+<tr>
+<td>face_vertices</td>
+<td><a href="#uint32">uint32</a></td>
+<td>repeated</td>
+<td>Faces in CSR form: all face vertex indices concatenated, with face_sizes giving the vertex count of each face (so face i spans the next face_sizes[i] entries).</td>
+</tr>
+<tr>
+<td>face_sizes</td>
+<td><a href="#uint32">uint32</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>attributes</td>
+<td><a href="#compas_pb-data-MeshData-AttributesEntry">MeshData.AttributesEntry</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>vertex_attribute_columns</td>
+<td><a href="#compas_pb-data-AttributeColumn">AttributeColumn</a></td>
+<td>repeated</td>
+<td>vertex attrs, column-wise (by vertex index)</td>
+</tr>
+<tr>
+<td>face_attribute_columns</td>
+<td><a href="#compas_pb-data-AttributeColumn">AttributeColumn</a></td>
+<td>repeated</td>
+<td>face attrs, column-wise (by face index)</td>
+</tr>
+<tr>
+<td>edge_attribute_columns</td>
+<td><a href="#compas_pb-data-AttributeColumn">AttributeColumn</a></td>
+<td>repeated</td>
+<td>edge attrs, column-wise (aligned to edge_keys)</td>
+</tr>
+<tr>
+<td>edge_keys</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td>repeated</td>
+<td>keys of edges carrying attributes</td>
+</tr>
+<tr>
+<td>default_vertex_attributes</td>
+<td><a href="#compas_pb-data-MeshData-DefaultVertexAttributesEntry">MeshData.DefaultVertexAttributesEntry</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>default_face_attributes</td>
+<td><a href="#compas_pb-data-MeshData-DefaultFaceAttributesEntry">MeshData.DefaultFaceAttributesEntry</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+<tr>
+<td>default_edge_attributes</td>
+<td><a href="#compas_pb-data-MeshData-DefaultEdgeAttributesEntry">MeshData.DefaultEdgeAttributesEntry</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-MeshData-AttributesEntry"></a></p>
+<h3 id="meshdataattributesentry">MeshData.AttributesEntry<a class="headerlink" href="#meshdataattributesentry" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-MeshData-DefaultEdgeAttributesEntry"></a></p>
+<h3 id="meshdatadefaultedgeattributesentry">MeshData.DefaultEdgeAttributesEntry<a class="headerlink" href="#meshdatadefaultedgeattributesentry" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-MeshData-DefaultFaceAttributesEntry"></a></p>
+<h3 id="meshdatadefaultfaceattributesentry">MeshData.DefaultFaceAttributesEntry<a class="headerlink" href="#meshdatadefaultfaceattributesentry" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-MeshData-DefaultVertexAttributesEntry"></a></p>
+<h3 id="meshdatadefaultvertexattributesentry">MeshData.DefaultVertexAttributesEntry<a class="headerlink" href="#meshdatadefaultvertexattributesentry" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-PolyhedronData"></a></p>
+<h3 id="polyhedrondata">PolyhedronData<a class="headerlink" href="#polyhedrondata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+<tr>
+<td>vertices</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>flat x,y,z triplets</td>
+</tr>
+<tr>
+<td>faces</td>
+<td><a href="#compas_pb-data-FaceData">FaceData</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb_generated_geometry-proto"></a></p>
+<p align="right"><a href="#top">Top</a></p>
+
+<h2 id="compas_pbgeneratedgeometryproto">compas_pb/generated/geometry.proto<a class="headerlink" href="#compas_pbgeneratedgeometryproto" title="Permanent link">¤</a></h2>
+<p><a name="compas_pb-data-ArcData"></a></p>
+<h3 id="arcdata">ArcData<a class="headerlink" href="#arcdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>circle</td>
+<td><a href="#compas_pb-data-CircleData">CircleData</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>start_angle</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>end_angle</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-BezierData"></a></p>
+<h3 id="bezierdata">BezierData<a class="headerlink" href="#bezierdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>points</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>flat x,y,z triplets // control points</td>
+</tr>
+<tr>
+<td>degree</td>
+<td><a href="#int32">int32</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-BoxData"></a></p>
+<h3 id="boxdata">BoxData<a class="headerlink" href="#boxdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>frame</td>
+<td><a href="#compas_pb-data-FrameData">FrameData</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>xsize</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ysize</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zsize</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-CapsuleData"></a></p>
+<h3 id="capsuledata">CapsuleData<a class="headerlink" href="#capsuledata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>radius</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>height</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>frame</td>
+<td><a href="#compas_pb-data-FrameData">FrameData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-CircleData"></a></p>
+<h3 id="circledata">CircleData<a class="headerlink" href="#circledata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>radius</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>frame</td>
+<td><a href="#compas_pb-data-FrameData">FrameData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-ConeData"></a></p>
+<h3 id="conedata">ConeData<a class="headerlink" href="#conedata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>radius</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>height</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>frame</td>
+<td><a href="#compas_pb-data-FrameData">FrameData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-CylinderData"></a></p>
+<h3 id="cylinderdata">CylinderData<a class="headerlink" href="#cylinderdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>radius</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>height</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>frame</td>
+<td><a href="#compas_pb-data-FrameData">FrameData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-EllipseData"></a></p>
+<h3 id="ellipsedata">EllipseData<a class="headerlink" href="#ellipsedata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>major</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>minor</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>frame</td>
+<td><a href="#compas_pb-data-FrameData">FrameData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-FrameData"></a></p>
+<h3 id="framedata">FrameData<a class="headerlink" href="#framedata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>point</td>
+<td><a href="#compas_pb-data-PointData">PointData</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>xaxis</td>
+<td><a href="#compas_pb-data-VectorData">VectorData</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>yaxis</td>
+<td><a href="#compas_pb-data-VectorData">VectorData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-HyperbolaData"></a></p>
+<h3 id="hyperboladata">HyperbolaData<a class="headerlink" href="#hyperboladata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>major</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>minor</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>frame</td>
+<td><a href="#compas_pb-data-FrameData">FrameData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-LineData"></a></p>
+<h3 id="linedata">LineData<a class="headerlink" href="#linedata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>start</td>
+<td><a href="#compas_pb-data-PointData">PointData</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>end</td>
+<td><a href="#compas_pb-data-PointData">PointData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-ParabolaData"></a></p>
+<h3 id="paraboladata">ParabolaData<a class="headerlink" href="#paraboladata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>focal</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>frame</td>
+<td><a href="#compas_pb-data-FrameData">FrameData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-PlaneData"></a></p>
+<h3 id="planedata">PlaneData<a class="headerlink" href="#planedata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>point</td>
+<td><a href="#compas_pb-data-PointData">PointData</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>normal</td>
+<td><a href="#compas_pb-data-VectorData">VectorData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-PointData"></a></p>
+<h3 id="pointdata">PointData<a class="headerlink" href="#pointdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td>no inheritance, so Data will have to repeat but apparently</td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>x</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>y</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>z</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-PointcloudData"></a></p>
+<h3 id="pointclouddata">PointcloudData<a class="headerlink" href="#pointclouddata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>points</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>flat x,y,z triplets</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-PolygonData"></a></p>
+<h3 id="polygondata">PolygonData<a class="headerlink" href="#polygondata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>points</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>flat x,y,z triplets</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-PolylineData"></a></p>
+<h3 id="polylinedata">PolylineData<a class="headerlink" href="#polylinedata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>points</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>flat x,y,z triplets</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-ProjectionData"></a></p>
+<h3 id="projectiondata">ProjectionData<a class="headerlink" href="#projectiondata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>matrix</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>4x4 matrix stored as flat array of 16 floats</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-QuaternionData"></a></p>
+<h3 id="quaterniondata">QuaternionData<a class="headerlink" href="#quaterniondata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>w</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>x</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>y</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>z</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-ReflectionData"></a></p>
+<h3 id="reflectiondata">ReflectionData<a class="headerlink" href="#reflectiondata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>matrix</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>4x4 matrix stored as flat array of 16 floats</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-RotationData"></a></p>
+<h3 id="rotationdata">RotationData<a class="headerlink" href="#rotationdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>matrix</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>4x4 matrix stored as flat array of 16 doubles (exact round-trip)</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-ScaleData"></a></p>
+<h3 id="scaledata">ScaleData<a class="headerlink" href="#scaledata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>matrix</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>4x4 matrix stored as flat array of 16 floats</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-ShearData"></a></p>
+<h3 id="sheardata">ShearData<a class="headerlink" href="#sheardata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>matrix</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>4x4 matrix stored as flat array of 16 floats</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-SphereData"></a></p>
+<h3 id="spheredata">SphereData<a class="headerlink" href="#spheredata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>radius</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>frame</td>
+<td><a href="#compas_pb-data-FrameData">FrameData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-TorusData"></a></p>
+<h3 id="torusdata">TorusData<a class="headerlink" href="#torusdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>radius_axis</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>radius_pipe</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>frame</td>
+<td><a href="#compas_pb-data-FrameData">FrameData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-TransformationData"></a></p>
+<h3 id="transformationdata">TransformationData<a class="headerlink" href="#transformationdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>matrix</td>
+<td><a href="#double">double</a></td>
+<td>repeated</td>
+<td>4x4 matrix stored as flat array of 16 floats</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-TranslationData"></a></p>
+<h3 id="translationdata">TranslationData<a class="headerlink" href="#translationdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>translation_vector</td>
+<td><a href="#compas_pb-data-VectorData">VectorData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-VectorData"></a></p>
+<h3 id="vectordata">VectorData<a class="headerlink" href="#vectordata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>guid</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>x</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>y</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>z</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb_generated_message-proto"></a></p>
+<p align="right"><a href="#top">Top</a></p>
+
+<h2 id="compas_pbgeneratedmessageproto">compas_pb/generated/message.proto<a class="headerlink" href="#compas_pbgeneratedmessageproto" title="Permanent link">¤</a></h2>
+<p><a name="compas_pb-data-AnyData"></a></p>
+<h3 id="anydata">AnyData<a class="headerlink" href="#anydata" title="Permanent link">¤</a></h3>
+<p>arbitrary container to hold message data and default data</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>message</td>
+<td><a href="#google-protobuf-Any">google.protobuf.Any</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#google-protobuf-Value">google.protobuf.Value</a></td>
+<td></td>
+<td>null / bool / str / bytes</td>
+</tr>
+<tr>
+<td>fallback</td>
+<td><a href="#compas_pb-data-FallbackData">FallbackData</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>int_value</td>
+<td><a href="#int64">int64</a></td>
+<td></td>
+<td>explicit int so it is not coerced from a float</td>
+</tr>
+<tr>
+<td>double_value</td>
+<td><a href="#double">double</a></td>
+<td></td>
+<td>explicit float so an integral value stays a float</td>
+</tr>
+<tr>
+<td>dict_value</td>
+<td><a href="#compas_pb-data-DictData">DictData</a></td>
+<td></td>
+<td>plain dict without the google.protobuf.Any type_url overhead</td>
+</tr>
+<tr>
+<td>list_value</td>
+<td><a href="#compas_pb-data-ListData">ListData</a></td>
+<td></td>
+<td>plain list without the google.protobuf.Any type_url overhead</td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-DictData"></a></p>
+<h3 id="dictdata">DictData<a class="headerlink" href="#dictdata" title="Permanent link">¤</a></h3>
+<p>repeated serves as a dict in protobuf</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>items</td>
+<td><a href="#compas_pb-data-DictData-ItemsEntry">DictData.ItemsEntry</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-DictData-ItemsEntry"></a></p>
+<h3 id="dictdataitemsentry">DictData.ItemsEntry<a class="headerlink" href="#dictdataitemsentry" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-FallbackData"></a></p>
+<h3 id="fallbackdata">FallbackData<a class="headerlink" href="#fallbackdata" title="Permanent link">¤</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>data</td>
+<td><a href="#compas_pb-data-DictData">DictData</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-ListData"></a></p>
+<h3 id="listdata">ListData<a class="headerlink" href="#listdata" title="Permanent link">¤</a></h3>
+<p>repeated serves as a list in protobuf</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>items</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="compas_pb-data-MessageData"></a></p>
+<h3 id="messagedata">MessageData<a class="headerlink" href="#messagedata" title="Permanent link">¤</a></h3>
+<p>root serialization element</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>data</td>
+<td><a href="#compas_pb-data-AnyData">AnyData</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>version</td>
+<td><a href="#string">string</a></td>
+<td>optional</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="scalar-value-types">Scalar Value Types<a class="headerlink" href="#scalar-value-types" title="Permanent link">¤</a></h2>
+<table>
+<thead>
+<tr>
+<th>.proto Type</th>
+<th>Notes</th>
+<th>C++</th>
+<th>Java</th>
+<th>Python</th>
+<th>Go</th>
+<th>C#</th>
+<th>PHP</th>
+<th>Ruby</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a name="double" /> double</td>
+<td></td>
+<td>double</td>
+<td>double</td>
+<td>float</td>
+<td>float64</td>
+<td>double</td>
+<td>float</td>
+<td>Float</td>
+</tr>
+<tr>
+<td><a name="float" /> float</td>
+<td></td>
+<td>float</td>
+<td>float</td>
+<td>float</td>
+<td>float32</td>
+<td>float</td>
+<td>float</td>
+<td>Float</td>
+</tr>
+<tr>
+<td><a name="int32" /> int32</td>
+<td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+<td>int32</td>
+<td>int</td>
+<td>integer</td>
+<td>Bignum or Fixnum (as required)</td>
+</tr>
+<tr>
+<td><a name="int64" /> int64</td>
+<td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.</td>
+<td>int64</td>
+<td>long</td>
+<td>int/long</td>
+<td>int64</td>
+<td>long</td>
+<td>integer/string</td>
+<td>Bignum</td>
+</tr>
+<tr>
+<td><a name="uint32" /> uint32</td>
+<td>Uses variable-length encoding.</td>
+<td>uint32</td>
+<td>int</td>
+<td>int/long</td>
+<td>uint32</td>
+<td>uint</td>
+<td>integer</td>
+<td>Bignum or Fixnum (as required)</td>
+</tr>
+<tr>
+<td><a name="uint64" /> uint64</td>
+<td>Uses variable-length encoding.</td>
+<td>uint64</td>
+<td>long</td>
+<td>int/long</td>
+<td>uint64</td>
+<td>ulong</td>
+<td>integer/string</td>
+<td>Bignum or Fixnum (as required)</td>
+</tr>
+<tr>
+<td><a name="sint32" /> sint32</td>
+<td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+<td>int32</td>
+<td>int</td>
+<td>integer</td>
+<td>Bignum or Fixnum (as required)</td>
+</tr>
+<tr>
+<td><a name="sint64" /> sint64</td>
+<td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.</td>
+<td>int64</td>
+<td>long</td>
+<td>int/long</td>
+<td>int64</td>
+<td>long</td>
+<td>integer/string</td>
+<td>Bignum</td>
+</tr>
+<tr>
+<td><a name="fixed32" /> fixed32</td>
+<td>Always four bytes. More efficient than uint32 if values are often greater than 2^28.</td>
+<td>uint32</td>
+<td>int</td>
+<td>int</td>
+<td>uint32</td>
+<td>uint</td>
+<td>integer</td>
+<td>Bignum or Fixnum (as required)</td>
+</tr>
+<tr>
+<td><a name="fixed64" /> fixed64</td>
+<td>Always eight bytes. More efficient than uint64 if values are often greater than 2^56.</td>
+<td>uint64</td>
+<td>long</td>
+<td>int/long</td>
+<td>uint64</td>
+<td>ulong</td>
+<td>integer/string</td>
+<td>Bignum</td>
+</tr>
+<tr>
+<td><a name="sfixed32" /> sfixed32</td>
+<td>Always four bytes.</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+<td>int32</td>
+<td>int</td>
+<td>integer</td>
+<td>Bignum or Fixnum (as required)</td>
+</tr>
+<tr>
+<td><a name="sfixed64" /> sfixed64</td>
+<td>Always eight bytes.</td>
+<td>int64</td>
+<td>long</td>
+<td>int/long</td>
+<td>int64</td>
+<td>long</td>
+<td>integer/string</td>
+<td>Bignum</td>
+</tr>
+<tr>
+<td><a name="bool" /> bool</td>
+<td></td>
+<td>bool</td>
+<td>boolean</td>
+<td>boolean</td>
+<td>bool</td>
+<td>bool</td>
+<td>boolean</td>
+<td>TrueClass/FalseClass</td>
+</tr>
+<tr>
+<td><a name="string" /> string</td>
+<td>A string must always contain UTF-8 encoded or 7-bit ASCII text.</td>
+<td>string</td>
+<td>String</td>
+<td>str/unicode</td>
+<td>string</td>
+<td>string</td>
+<td>string</td>
+<td>String (UTF-8)</td>
+</tr>
+<tr>
+<td><a name="bytes" /> bytes</td>
+<td>May contain any arbitrary sequence of bytes.</td>
+<td>string</td>
+<td>ByteString</td>
+<td>str</td>
+<td>[]byte</td>
+<td>ByteString</td>
+<td>string</td>
+<td>String (ASCII-8BIT)</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../reference/compas_pb.conversions/" class="md-footer__link md-footer__link--prev" aria-label="Previous: compas_pb.conversions">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                compas_pb.conversions
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../changelog/" class="md-footer__link md-footer__link--next" aria-label="Next: Changelog">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Changelog
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024 - 2025, ETH Zurich - Gramazio Kohler Research
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "content.footnote.tooltips", "navigation.expand", "navigation.footer", "navigation.indexes", "navigation.sections", "navigation.top", "search.highlight", "search.suggest", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
