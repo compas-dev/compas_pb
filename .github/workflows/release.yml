@@ -25,6 +25,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     permissions:
+      contents: write
       id-token: write
     steps:
       - uses: compas-dev/compas-actions.publish@add-trusted-publishing
@@ -32,8 +33,10 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
   upload-assets:
-    needs: build
+    needs: publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
