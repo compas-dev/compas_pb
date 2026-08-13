@@ -1,13 +1,14 @@
 site_name: COMPAS Protobuf
-site_url: https://gramaziokohler.github.io/compas_pb/
+site_url: https://compas.dev/compas_pb/
 
-repo_name: gramaziokohler
-repo_url: https://github.com/gramaziokohler/compas_pb/
+repo_name: compas-dev/compas_pb
+edit_uri: blob/main/docs/
+repo_url: https://github.com/compas-dev/compas_pb/
 
 copyright: Copyright &copy; 2024 - 2025, ETH Zurich - Gramazio Kohler Research
 
 extra:
-  homepage: https://gramaziokohler.github.io/compas_pb/
+  homepage: https://compas.dev/compas_pb/
   version:
     provider: mike
 

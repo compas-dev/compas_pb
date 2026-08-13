@@ -13,7 +13,7 @@ pip install compas_pb
 The latest version can be installed from local source.
 
 ```bash
-git clone https://github.com/gramaziokohler/compas_pb.git
+git clone https://github.com/compas-dev/compas_pb.git
 cd compas_pb
 pip install -e .
 ```
@@ -23,7 +23,7 @@ pip install -e .
 To install `compas_pb` for development, install from local source with the "dev" requirements.
 
 ```bash
-git clone https://github.com/gramaziokohler/compas_pb.git
+git clone https://github.com/compas-dev/compas_pb.git
 cd compas_pb
 pip install -e .[dev]
 ```
