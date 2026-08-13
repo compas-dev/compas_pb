@@ -86,3 +86,7 @@ please check out the online documentation here: [compas_pb docs](https://compas.
 ## Issue Tracker
 
 If you find a bug or if you have a problem with running the code, please file an issue on the [Issue Tracker](https://github.com/compas-dev/compas_pb/issues).
+
+## Maintainers
+
+Releases are prepared and approved through pull requests. See [RELEASING.md](RELEASING.md).

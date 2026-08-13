@@ -1,13 +1,20 @@
 from pathlib import Path
 
-from invoke.collection import Collection
 from compas_invocations2 import build
 from compas_invocations2 import style
 from compas_invocations2 import tests
+from invoke.collection import Collection
+from invoke.tasks import task
 
-from compas_pb.invocations import generate_proto_classes
 from compas_pb.invocations import create_class_assets
+from compas_pb.invocations import generate_proto_classes
 from compas_pb.invocations import proto_docs
+
+
+@task
+def pre_build(ctx):
+    """Create generated protobuf archives before building a release."""
+    create_class_assets(ctx)
 
 
 ns = Collection(
@@ -17,9 +24,8 @@ ns = Collection(
     tests.test,
     tests.testdocs,
     tests.testcodeblocks,
-    build.prepare_changelog,
     build.clean,
-    build.release,
+    pre_build,
     generate_proto_classes,
     create_class_assets,
     proto_docs,
