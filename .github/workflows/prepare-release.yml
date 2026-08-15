@@ -20,7 +20,7 @@ jobs:
   release-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: compas-dev/compas-actions/release-pr@main
+      - uses: compas-dev/compas-actions/release-pr@v1
         with:
           release-type: ${{ inputs.release-type }}
           github-token: ${{ github.token }}
