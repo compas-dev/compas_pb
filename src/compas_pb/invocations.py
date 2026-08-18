@@ -194,7 +194,7 @@ def generate_proto_classes(ctx, target_language: str = "python"):
     plugin_flag = PROTO_PLUGIN_LANGUAGES.get(target_language)
     plugin_path = setup_protoc_gen_es(ctx) if plugin_flag == "es" else None
 
-    for idl_file in ctx.proto_folder.glob("*.proto"):
+    for idl_file in Path(ctx.proto_folder).glob("*.proto"):
         cmd = f"{protoc_path} "
         cmd += " ".join(f"--proto_path={p}" for p in ctx.proto_include_paths)
 
@@ -271,7 +271,7 @@ def create_proto_bundle(ctx):
 
 @task()
 def create_class_assets(ctx):
-    base_dir = ctx.base_folder
+    base_dir = Path(ctx.base_folder)
     dist_dir = base_dir / "dist"
     dist_dir.mkdir(parents=True, exist_ok=True)
 
