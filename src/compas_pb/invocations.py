@@ -11,8 +11,17 @@ from invoke.tasks import task
 
 PROTOC_VERSION = "31.1"
 PROTOC_GEN_DOCS_VERSION = "1.5.1"
-# typescript,javascript, and go need other compiler plugins
+PROTOC_GEN_ES_VERSION = "2.14.0"
+
+# Languages protoc emits natively, with no extra plugin.
 PROTO_TARGET_LANGUAGES = ["cpp", "csharp", "java", "objc", "php", "ruby"]
+
+# Languages that need a third-party protoc plugin. Maps the language name used in asset
+# names to the protoc flag prefix the plugin registers (``--es_out`` for protobuf-es), so
+# javascript and go can be added here the same way.
+PROTO_PLUGIN_LANGUAGES = {"typescript": "es"}
+
+ALL_PROTO_TARGET_LANGUAGES = PROTO_TARGET_LANGUAGES + list(PROTO_PLUGIN_LANGUAGES)
 
 _PROTOC_ARCH_MAPPING = {
     "x86_64": "x86_64",
@@ -97,6 +106,42 @@ def _download_and_extract_protoc(url, extract_path):
     archive_path.unlink()
 
 
+def _get_cached_protoc_gen_es_path():
+    cache_dir = Path.home() / ".cache" / "protoc-gen-es" / PROTOC_GEN_ES_VERSION
+    plugin_bin = cache_dir / "node_modules" / ".bin" / "protoc-gen-es"
+    if platform.system() == "Windows":
+        plugin_bin = plugin_bin.with_suffix(".cmd")
+
+    return plugin_bin, cache_dir
+
+
+def setup_protoc_gen_es(ctx):
+    """Install the protobuf-es code generator, and return the path to its executable.
+
+    protoc has no native TypeScript output, so TypeScript bindings come from
+    ``@bufbuild/protoc-gen-es``. It is an npm package, so this needs node on PATH. The
+    install is cached per version alongside the protoc cache.
+    """
+    plugin_bin, cache_dir = _get_cached_protoc_gen_es_path()
+
+    if plugin_bin.exists():
+        print(f"Using cached protoc-gen-es at: {plugin_bin}")
+        return plugin_bin
+
+    print(f"protoc-gen-es not found in cache. Installing to: {cache_dir}")
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    ctx.run(
+        f'npm install --silent --no-package-lock --prefix "{cache_dir}" '
+        f"@bufbuild/protoc-gen-es@{PROTOC_GEN_ES_VERSION}"
+    )
+
+    if not plugin_bin.exists():
+        raise FileNotFoundError(f"Failed to find protoc-gen-es after install: {plugin_bin}")
+
+    print("Install complete.")
+    return plugin_bin
+
+
 def setup_protoc():
     protoc_bin, cache_dir = _get_cached_protoc_path()
     plugin_executable = protoc_bin.parent / "protoc-gen-doc"
@@ -135,20 +180,33 @@ def setup_protoc():
 def generate_proto_classes(ctx, target_language: str = "python"):
     protoc_path, _ = setup_protoc()
 
-    proto_out_folder = ""
     if target_language == "python":
         proto_out_folder = Path(ctx.proto_out_folder)
-    elif target_language in PROTO_TARGET_LANGUAGES:
-        proto_out_folder = Path(ctx.proto_out_folder) / "compas_pb" / "generated" / target_language
+    elif target_language in ALL_PROTO_TARGET_LANGUAGES:
+        proto_out_folder = _generated_root(ctx) / target_language
         proto_out_folder.mkdir(parents=True, exist_ok=True)
     else:
-        print(f"Target language '{target_language}' not supported.")
+        supported = ", ".join(["python"] + ALL_PROTO_TARGET_LANGUAGES)
+        raise ValueError(f"Target language '{target_language}' not supported. Choose one of: {supported}")
+
+    # Plugin-backed languages replace the --<lang>_out flag with the plugin's own flag,
+    # and need the plugin binary passed explicitly since it is not on PATH.
+    plugin_flag = PROTO_PLUGIN_LANGUAGES.get(target_language)
+    plugin_path = setup_protoc_gen_es(ctx) if plugin_flag == "es" else None
 
     for idl_file in ctx.proto_folder.glob("*.proto"):
         cmd = f"{protoc_path} "
         cmd += " ".join(f"--proto_path={p}" for p in ctx.proto_include_paths)
 
-        cmd += f" --{target_language}_out={proto_out_folder} {idl_file}"
+        if plugin_flag:
+            cmd += f' --plugin=protoc-gen-{plugin_flag}="{plugin_path}"'
+            cmd += f" --{plugin_flag}_out={proto_out_folder}"
+            if plugin_flag == "es":
+                # Emit TypeScript rather than JavaScript + .d.ts.
+                cmd += f" --{plugin_flag}_opt=target=ts"
+            cmd += f" {idl_file}"
+        else:
+            cmd += f" --{target_language}_out={proto_out_folder} {idl_file}"
 
         if target_language == "python":
             cmd += f" --pyi_out={proto_out_folder}"
@@ -157,23 +215,79 @@ def generate_proto_classes(ctx, target_language: str = "python"):
         ctx.run(cmd)
 
 
+def _package_name(ctx) -> str:
+    """Distribution name used to label release assets.
+
+    Defaults to compas_pb, so any package that owns .proto files can reuse these tasks by
+    setting ``package_name`` in its invoke configuration.
+    """
+    return ctx.config.get("package_name", "compas_pb")
+
+
+def _generated_root(ctx) -> Path:
+    """Folder the per-language bindings are generated into before being zipped."""
+    configured = ctx.config.get("generated_folder", None)
+    if configured:
+        return Path(configured)
+    return Path(ctx.proto_out_folder) / _package_name(ctx) / "generated"
+
+
+def _asset_version(language: str) -> str:
+    """Version marker for a generated-bindings asset.
+
+    Natively-emitted languages are pinned by the protoc that produced them. Plugin-backed
+    languages are pinned by the plugin version instead, since that is what shapes the
+    generated API — protoc only feeds it a descriptor.
+    """
+    if language in PROTO_PLUGIN_LANGUAGES:
+        return PROTOC_GEN_ES_VERSION if PROTO_PLUGIN_LANGUAGES[language] == "es" else PROTOC_VERSION
+    return PROTOC_VERSION
+
+
+@task()
+def create_proto_bundle(ctx):
+    """Zip the .proto schemas themselves for release upload.
+
+    Every downstream generator needs the schemas, not just the bindings compas_pb happens
+    to generate. Publishing them is what lets a consumer pin a schema version instead of
+    scraping this repository at some ref.
+    """
+    dist_dir = Path(ctx.base_folder) / "dist" / "proto"
+    dist_dir.mkdir(parents=True, exist_ok=True)
+
+    zip_path = dist_dir / f"{_package_name(ctx)}-proto.zip"
+    zip_path.unlink(missing_ok=True)
+
+    proto_root = Path(ctx.proto_include_paths[0])
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for item in sorted(proto_root.rglob("*.proto")):
+            arcname = str(item.relative_to(proto_root))
+            zipf.write(item, arcname)
+            print(f"Added {arcname}")
+
+    print(f"Proto bundle ready: {zip_path}")
+    return zip_path
+
+
 @task()
 def create_class_assets(ctx):
     base_dir = ctx.base_folder
     dist_dir = base_dir / "dist"
     dist_dir.mkdir(parents=True, exist_ok=True)
 
-    for existing_file in dist_dir.glob("compas_pb-generated-*.zip"):
+    # Assets are written to dist/proto/, so clean there — globbing dist/ itself never
+    # matched anything and left stale zips behind for the release upload to pick up.
+    for existing_file in (dist_dir / "proto").glob(f"{_package_name(ctx)}-generated-*.zip"):
         existing_file.unlink()
         print(f"Removed existing asset: {existing_file}")
 
-    class_assests = []
+    class_assests = [create_proto_bundle(ctx)]
 
-    for language in PROTO_TARGET_LANGUAGES:
+    for language in ALL_PROTO_TARGET_LANGUAGES:
         generate_proto_classes(ctx, target_language=language)
 
-        generated_dir = base_dir / "src" / "compas_pb" / "generated" / language
-        zip_path = dist_dir / "proto" / f"compas_pb-generated-{language}-{PROTOC_VERSION}.zip"
+        generated_dir = _generated_root(ctx) / language
+        zip_path = dist_dir / "proto" / f"{_package_name(ctx)}-generated-{language}-{_asset_version(language)}.zip"
         zip_path.parent.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             for item in generated_dir.rglob("*"):
