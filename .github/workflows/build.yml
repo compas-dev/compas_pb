@@ -44,22 +44,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: compas-dev/compas-actions/setup-python@v1
+      - uses: compas-dev/compas-actions/release-assets@v1
         with:
           python-version: "3.12"
           management-tool: uv
           extras: dev
-
-      - name: Test asset creation
-        run: invoke pre-build
-
-      - name: Upload test artifacts
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: protobuf-test-assets
-          path: dist/proto/*.zip
-          if-no-files-found: error
+          invoke-tasks: pre-build
+          paths: dist/proto/*.zip
+          artifact-name: protobuf-test-assets
