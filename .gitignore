@@ -152,3 +152,8 @@ cSharp/**/bin/*
 cSharp/**/obj/*
 
 *.bin
+
+# Transient per-language protobuf output: create_class_assets generates each language,
+# zips it for release upload, then removes the folder. The Python bindings beside them
+# are committed on purpose.
+src/compas_pb/generated/*/

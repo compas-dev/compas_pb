@@ -9,7 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added `create-proto-bundle`, which zips the `.proto` schemas for upload as a release asset, so downstream generators can pin a schema version instead of reading files out of this repository.
+* Added TypeScript to the generated bindings, via `@bufbuild/protoc-gen-es`. `PROTO_PLUGIN_LANGUAGES` maps a language to the flag its protoc plugin registers, so javascript and go can be added the same way.
+* Added an Architecture page describing how one domain model reaches many languages, and who owns `.proto` files versus who implements a runtime.
+* Added a guide for implementing a `compas_pb` runtime in a new language.
+
 ### Changed
+
+* Changed the asset tasks to take their package name and output folder from the invoke configuration, so any package that owns `.proto` files can reuse them. `base_folder` and `proto_folder` now accept a string or a `Path`.
+* Changed assets built by a protoc plugin to carry the plugin version rather than the protoc version, since the plugin is what shapes the generated API.
+* Changed `generate-proto-classes` to raise on an unsupported target language, instead of warning and then running protoc with an empty output flag.
+* Changed the asset job to use `compas-dev/compas-actions/release-assets@v1`.
 
 ### Removed
 

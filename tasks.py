@@ -7,6 +7,7 @@ from invoke.collection import Collection
 from invoke.tasks import task
 
 from compas_pb.invocations import create_class_assets
+from compas_pb.invocations import create_proto_bundle
 from compas_pb.invocations import generate_proto_classes
 from compas_pb.invocations import proto_docs
 
@@ -28,6 +29,7 @@ ns = Collection(
     pre_build,
     generate_proto_classes,
     create_class_assets,
+    create_proto_bundle,
     proto_docs,
 )
 
