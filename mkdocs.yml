@@ -151,6 +151,7 @@ nav:
       - compas_pb.registry: reference/compas_pb.registry.md
       - compas_pb.conversions: reference/compas_pb.conversions.md
   - Architecture: architecture.md
+  - Implementing a Runtime: implementing-a-runtime.md
   - Protobuf Definitions: protobuf.md
   - Other:
       - changelog.md
