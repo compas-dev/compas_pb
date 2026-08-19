@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Removed
+
+
+## [1.2.0] 2026-08-19
+
+### Added
+
 * Added `create-proto-bundle`, which zips the `.proto` schemas for upload as a release asset, so downstream generators can pin a schema version instead of reading files out of this repository.
 * Added TypeScript to the generated bindings, via `@bufbuild/protoc-gen-es`. `PROTO_PLUGIN_LANGUAGES` maps a language to the flag its protoc plugin registers, so javascript and go can be added the same way.
 * Added an Architecture page describing how one domain model reaches many languages, and who owns `.proto` files versus who implements a runtime.
